@@ -7,6 +7,17 @@ import svgr from "vite-plugin-svgr";
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+        port: 3000,
+        hmr: true,
+        proxy: {
+            "/api": {
+                target: "http://localhost:7071/",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ''),
+            }
+        }
+    },
   plugins: [
     react({
       babel: {

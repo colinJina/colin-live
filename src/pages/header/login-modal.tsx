@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Modal, Form, Input, Button, Tabs, message, ConfigProvider } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, MailOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { useCheckCode } from '../../hooks/queries/useAuth';
+
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -11,9 +13,17 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
     const [activeTab, setActiveTab] = useState('login');
     const [loading, setLoading] = useState(false);
 
+    // Captcha Hook
+    const { data: checkCodeData, refetch: refreshCheckCode } = useCheckCode();
+
     const onFinish = (values: any) => {
         setLoading(true);
-        console.log('Success:', values);
+        // Combine values with captcha key if available
+        const submitValues = {
+            ...values,
+            checkCodeKey: checkCodeData?.checkCodeKey
+        };
+        console.log('Success:', submitValues);
         setTimeout(() => {
             message.success(activeTab === 'login' ? '登录成功' : '注册成功');
             setLoading(false);
@@ -76,6 +86,33 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                         >
                                             <Input.Password prefix={<LockOutlined className="text-gray-400" />} placeholder="密码" />
                                         </Form.Item>
+
+                                        <div className="flex justify-center gap-4">
+                                            <Form.Item
+                                                name="checkCode"
+                                                className="mb-0 flex-1"
+                                                rules={[{ required: true, message: '请输入验证码' }]}
+                                            >
+                                                <Input
+                                                    prefix={<SafetyCertificateOutlined className="text-gray-400" />}
+                                                    placeholder="验证码"
+                                                />
+                                            </Form.Item>
+                                            <div
+                                                className="cursor-pointer h-[32px] w-[100px] bg-gray-100 flex items-center justify-center overflow-hidden rounded"
+                                                onClick={() => refreshCheckCode()}
+                                            >
+                                                {checkCodeData?.checkCode ? (
+                                                    <img
+                                                        src={checkCodeData.checkCode}
+                                                        alt="验证码"
+                                                        className="h-full w-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <span className="text-xs text-gray-400">点击获取</span>
+                                                )}
+                                            </div>
+                                        </div>
                                         <Form.Item className="mb-0">
                                             <Button
                                                 type="primary"
