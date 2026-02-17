@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@font-face {
+    font-family: "Noto Sans SC";
+    src: url("./fonts/NotoSansSC-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Noto Sans SC";
+    src: url("./fonts/NotoSansSC-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@theme {
+    --font-sans: "Noto Sans SC", "PingFang SC", "HarmonyOS_Regular", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+
+    /* Bilibili Brand Colors */
+    --color-bili-pink: #fb7299;
+    --color-bili-pink-hover: #ff85ad;
+    --color-bili-blue: #00aeec;
+    --color-bili-bg: #f4f5f7;
+    --color-bili-gray: #999999;
+}
+
+body {
+    font-family: var(--font-sans);
+}
