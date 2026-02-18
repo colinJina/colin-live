@@ -9,10 +9,11 @@ const queryClient = new QueryClient({
     },
 });
 
-import { createRoot } from 'react-dom/client';
 import { App as AntApp, ConfigProvider } from 'antd';
+import { createRoot } from 'react-dom/client';
 // 1. 导入 React Router 核心组件和你的路由配置
 import { RouterProvider } from 'react-router-dom';
+
 import './index.css';
 import './App.css';
 // 注：若 App.tsx 无额外逻辑，可直接删除 App 导入（因为路由已接管页面渲染）

@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { Modal, Form, Input, Button, Tabs, message, ConfigProvider } from 'antd';
 import {
     UserOutlined,
     LockOutlined,
     MailOutlined,
     SafetyCertificateOutlined,
 } from '@ant-design/icons';
+import { Modal, Form, Input, Button, Tabs, message, ConfigProvider } from 'antd';
+import { useState } from 'react';
+
 import { useCheckCode, useLoginAccount } from '../../hooks/queries/useAuth';
-import { md5 } from '../../utils';
 import { useUserStore } from '../../stores/useUserStore';
+import { md5 } from '../../utils';
 
 interface LoginModalProps {
     isOpen: boolean;

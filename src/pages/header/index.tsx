@@ -1,15 +1,18 @@
-import bgImage from '@/assets/images/banner_bg.png';
-import Zhuzhan from '@/assets/icon/zhuzhan.svg?react';
+import { Input } from 'antd';
+import type { GetProps } from 'antd';
+import { useState } from 'react';
+
+import HeaderUploadButton from '../../component/headerUploadButton';
+
+import LoginModal from './login-modal';
+
 import Collect from '@/assets/icon/collect.svg?react';
 import CreateCenter from '@/assets/icon/create-center.svg?react';
 import History from '@/assets/icon/history.svg?react';
 import Message from '@/assets/icon/message.svg?react';
 import User from '@/assets/icon/user.svg?react';
-import { Input } from 'antd';
-import type { GetProps } from 'antd';
-import HeaderUploadButton from '../../component/headerUploadButton';
-import LoginModal from './login-modal';
-import { useState } from 'react';
+import Zhuzhan from '@/assets/icon/zhuzhan.svg?react';
+import bgImage from '@/assets/images/banner_bg.png';
 
 type SearchProps = GetProps<typeof Input.Search>;
 

@@ -1,5 +1,5 @@
-import { Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
 import clsx from 'clsx';
 
 interface HeaderUploadButtonProps {

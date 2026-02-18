@@ -1,5 +1,5 @@
-import { create } from 'zustand';
 import Cookies from 'js-cookie';
+import { create } from 'zustand';
 
 interface UserInfo {
     userId: string;

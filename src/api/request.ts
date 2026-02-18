@@ -1,3 +1,4 @@
+import { message as AntdMessage } from 'antd';
 import axios from 'axios';
 import type {
     AxiosInstance,
@@ -5,8 +6,8 @@ import type {
     AxiosResponse,
     InternalAxiosRequestConfig,
 } from 'axios';
-import { message as AntdMessage } from 'antd';
 import Cookies from 'js-cookie';
+
 import { useUserStore } from '../stores/useUserStore';
 
 // 初始化配置（模拟 element-plus offset: 200）
