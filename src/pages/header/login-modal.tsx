@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Modal, Form, Input, Button, Tabs, message, ConfigProvider } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
-import { useCheckCode } from '../../hooks/queries/useAuth';
+import { useCheckCode, useLoginAccount } from '../../hooks/queries/useAuth';
+import { md5 } from '../../utils';
 
 
 interface LoginModalProps {
@@ -15,20 +16,33 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
 
     // Captcha Hook
     const { data: checkCodeData, refetch: refreshCheckCode } = useCheckCode();
-
+    const loginMutation = useLoginAccount();
     const onFinish = (values: any) => {
         setLoading(true);
-        // Combine values with captcha key if available
         const submitValues = {
             ...values,
-            checkCodeKey: checkCodeData?.checkCodeKey
+            password: md5(values.password).toString(),
+            checkCodeKey: checkCodeData?.checkCodeKey,
         };
-        console.log('Success:', submitValues);
-        setTimeout(() => {
-            message.success(activeTab === 'login' ? '登录成功' : '注册成功');
-            setLoading(false);
-            onCancel();
-        }, 1000);
+
+        loginMutation.mutate(submitValues, {
+            onSuccess: (data) => {
+                console.log('登录返回数据:', data);
+                setLoading(false);
+                if (data) {
+                    message.success('登录成功');
+                    onCancel();
+                } else {
+                    refreshCheckCode();
+                }
+            },
+            onError: (error: any) => {
+                setLoading(false);
+                message.error(error.msg || '登录失败');
+                refreshCheckCode();
+            }
+        });
+
     };
 
     return (

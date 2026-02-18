@@ -69,6 +69,7 @@ const instance: AxiosInstance = axios.create({
 // 请求前拦截器
 instance.interceptors.request.use(
     (config: InternalAxiosRequestConfig & CustomRequestConfig) => {
+        console.log('config',config);
         if (config.showLoading) {
             // 使用 antd 的 message 模拟加载状态
             loadingInstance = message.loading({
@@ -134,9 +135,7 @@ const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | 
         url, 
         params, 
         dataType, 
-        showLoading = false, 
         responseType = 'json', 
-        showError = true 
     } = config;
 
     // 默认处理为 FormData
@@ -177,7 +176,6 @@ const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | 
         contentType = contentTypeJson;
         requestBody = params; // 直接使用对象
     }
-
     const token = Cookies.get('token');
     
     const headers = {
@@ -199,10 +197,7 @@ const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | 
         ...config,
         responseType: responseType as any,
     }).catch(error => {
-        if (error.showError) {
-            message.error(error.msg || "未知错误");
-        }
-        return null;
+        return Promise.reject(error);
     }) as Promise<ResponseVO<T> | null>;
 };
 
