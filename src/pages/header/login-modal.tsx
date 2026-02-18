@@ -1,9 +1,14 @@
 import { useState } from 'react';
 import { Modal, Form, Input, Button, Tabs, message, ConfigProvider } from 'antd';
-import { UserOutlined, LockOutlined, MailOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import {
+    UserOutlined,
+    LockOutlined,
+    MailOutlined,
+    SafetyCertificateOutlined,
+} from '@ant-design/icons';
 import { useCheckCode, useLoginAccount } from '../../hooks/queries/useAuth';
 import { md5 } from '../../utils';
-
+import { useUserStore } from '../../stores/useUserStore';
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -17,6 +22,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
     // Captcha Hook
     const { data: checkCodeData, refetch: refreshCheckCode } = useCheckCode();
     const loginMutation = useLoginAccount();
+    const setUserInfo = useUserStore((state) => state.setUserInfo);
     const onFinish = (values: any) => {
         setLoading(true);
         const submitValues = {
@@ -30,6 +36,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                 console.log('登录返回数据:', data);
                 setLoading(false);
                 if (data) {
+                    setUserInfo(data);
                     message.success('登录成功');
                     onCancel();
                 } else {
@@ -40,9 +47,8 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                 setLoading(false);
                 message.error(error.msg || '登录失败');
                 refreshCheckCode();
-            }
+            },
         });
-
     };
 
     return (
@@ -89,26 +95,39 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                         <Form.Item
                                             name="email"
                                             className="mb-4"
-                                            rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }]}
+                                            rules={[
+                                                { required: true, message: '请输入邮箱' },
+                                                { type: 'email', message: '邮箱格式不正确' },
+                                            ]}
                                         >
-                                            <Input prefix={<MailOutlined className="text-gray-400" />} placeholder="邮箱" />
+                                            <Input
+                                                prefix={<MailOutlined className="text-gray-400" />}
+                                                placeholder="邮箱"
+                                            />
                                         </Form.Item>
                                         <Form.Item
                                             name="password"
                                             className="mb-4"
                                             rules={[{ required: true, message: '请输入密码' }]}
                                         >
-                                            <Input.Password prefix={<LockOutlined className="text-gray-400" />} placeholder="密码" />
+                                            <Input.Password
+                                                prefix={<LockOutlined className="text-gray-400" />}
+                                                placeholder="密码"
+                                            />
                                         </Form.Item>
 
                                         <div className="flex justify-center gap-4">
                                             <Form.Item
                                                 name="checkCode"
                                                 className="mb-0 flex-1"
-                                                rules={[{ required: true, message: '请输入验证码' }]}
+                                                rules={[
+                                                    { required: true, message: '请输入验证码' },
+                                                ]}
                                             >
                                                 <Input
-                                                    prefix={<SafetyCertificateOutlined className="text-gray-400" />}
+                                                    prefix={
+                                                        <SafetyCertificateOutlined className="text-gray-400" />
+                                                    }
                                                     placeholder="验证码"
                                                 />
                                             </Form.Item>
@@ -123,7 +142,9 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                                         className="h-full w-full object-cover"
                                                     />
                                                 ) : (
-                                                    <span className="text-xs text-gray-400">点击获取</span>
+                                                    <span className="text-xs text-gray-400">
+                                                        点击获取
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
@@ -154,23 +175,38 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                         <Form.Item
                                             name="email"
                                             className="mb-4"
-                                            rules={[{ required: true, message: '请输入邮箱' }, { type: 'email', message: '邮箱格式不正确' }]}
+                                            rules={[
+                                                { required: true, message: '请输入邮箱' },
+                                                { type: 'email', message: '邮箱格式不正确' },
+                                            ]}
                                         >
-                                            <Input prefix={<MailOutlined className="text-gray-400" />} placeholder="邮箱" />
+                                            <Input
+                                                prefix={<MailOutlined className="text-gray-400" />}
+                                                placeholder="邮箱"
+                                            />
                                         </Form.Item>
                                         <Form.Item
                                             name="nickname"
                                             className="mb-4"
                                             rules={[{ required: true, message: '请输入昵称' }]}
                                         >
-                                            <Input prefix={<UserOutlined className="text-gray-400" />} placeholder="昵称" />
+                                            <Input
+                                                prefix={<UserOutlined className="text-gray-400" />}
+                                                placeholder="昵称"
+                                            />
                                         </Form.Item>
                                         <Form.Item
                                             name="password"
                                             className="mb-4"
-                                            rules={[{ required: true, message: '请输入密码' }, { min: 6, message: '密码至少6位' }]}
+                                            rules={[
+                                                { required: true, message: '请输入密码' },
+                                                { min: 6, message: '密码至少6位' },
+                                            ]}
                                         >
-                                            <Input.Password prefix={<LockOutlined className="text-gray-400" />} placeholder="密码" />
+                                            <Input.Password
+                                                prefix={<LockOutlined className="text-gray-400" />}
+                                                placeholder="密码"
+                                            />
                                         </Form.Item>
                                         <Form.Item className="mb-0">
                                             <Button
@@ -189,7 +225,22 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                         ]}
                     />
                     <div className="mt-6 text-center text-xs text-gray-400">
-                        <p>登录即代表您同意 <a href="#" className="text-bili-blue hover:text-bili-pink transition-colors">服务协议</a> 和 <a href="#" className="text-bili-blue hover:text-bili-pink transition-colors">隐私权政策</a></p>
+                        <p>
+                            登录即代表您同意{' '}
+                            <a
+                                href="#"
+                                className="text-bili-blue hover:text-bili-pink transition-colors"
+                            >
+                                服务协议
+                            </a>{' '}
+                            和{' '}
+                            <a
+                                href="#"
+                                className="text-bili-blue hover:text-bili-pink transition-colors"
+                            >
+                                隐私权政策
+                            </a>
+                        </p>
                     </div>
                 </div>
             </Modal>

@@ -22,16 +22,15 @@
 }
 
 :root {
-    --text: #18191C;
-    --text2: #61666D;
+    --text: #18191c;
+    --text2: #61666d;
     --text3: #9499a0;
-    --blue: #00AEEC;
+    --blue: #00aeec;
     --blue2: #007fff;
     --blue3: #00a1d6;
     --bodyPadding: 150px;
     --rowCategoryCount: 10;
 }
-
 
 body {
     margin: 0px;
