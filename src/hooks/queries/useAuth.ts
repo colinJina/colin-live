@@ -5,6 +5,8 @@ import {
     getUserCountInfo,
     loginAccount,
     type LoginAccountRequest,
+    registerAccount,
+    type RegisterAccountRequest,
 } from '../../api/auth';
 
 export const useCheckCode = () => {
@@ -23,6 +25,16 @@ export const useLoginAccount = () => {
         mutationKey: ['loginAccount'],
         mutationFn: async (data: LoginAccountRequest) => {
             const response = await loginAccount(data);
+            return response?.data;
+        },
+    });
+};
+
+export const useRegisterAccount = () => {
+    return useMutation({
+        mutationKey: ['registerAccount'],
+        mutationFn: async (data: RegisterAccountRequest) => {
+            const response = await registerAccount(data);
             return response?.data;
         },
     });

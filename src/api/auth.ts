@@ -5,6 +5,14 @@ export interface CheckCodeResponse {
     checkCodeKey: string; // Verification key
 }
 
+export interface RegisterAccountRequest {
+    email: string;
+    nickName: string;
+    registerPassword: string;
+    checkCodeKey: string;
+    checkCode: string;
+}
+
 export interface LoginAccountRequest {
     // * `email` (String, Required)
     // * `password` (String, Required)
@@ -41,6 +49,15 @@ export const loginAccount = (data: LoginAccountRequest) => {
     return request<LoginAccountResponse>({
         url: '/account/login',
         method: 'POST',
+        data,
+    });
+};
+
+export const registerAccount = (data: RegisterAccountRequest) => {
+    return request<null>({
+        url: '/account/register',
+        method: 'POST',
+        dataType: 'form',
         data,
     });
 };
