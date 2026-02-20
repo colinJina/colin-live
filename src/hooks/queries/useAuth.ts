@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { getCheckCode, loginAccount, type LoginAccountRequest } from '../../api/auth';
+import {
+    getCheckCode,
+    getUserCountInfo,
+    loginAccount,
+    type LoginAccountRequest,
+} from '../../api/auth';
 
 export const useCheckCode = () => {
     return useQuery({
@@ -20,5 +25,16 @@ export const useLoginAccount = () => {
             const response = await loginAccount(data);
             return response?.data;
         },
+    });
+};
+
+export const useUserCountInfo = (enabled: boolean) => {
+    return useQuery({
+        queryKey: ['userCountInfo'],
+        queryFn: async () => {
+            const response = await getUserCountInfo();
+            return response?.data;
+        },
+        enabled,
     });
 };

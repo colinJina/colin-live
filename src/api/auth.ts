@@ -24,6 +24,12 @@ export interface LoginAccountResponse {
     token: string;
 }
 
+export interface GetUserCountInfoResponse {
+    fansCount: number;
+    currentCoinCount: number;
+    focusCount: number;
+}
+
 export const getCheckCode = () => {
     return request<CheckCodeResponse>({
         url: '/account/checkCode',
@@ -36,5 +42,12 @@ export const loginAccount = (data: LoginAccountRequest) => {
         url: '/account/login',
         method: 'POST',
         data,
+    });
+};
+
+export const getUserCountInfo = () => {
+    return request<GetUserCountInfoResponse>({
+        url: '/account/getUserCountInfo',
+        method: 'GET',
     });
 };

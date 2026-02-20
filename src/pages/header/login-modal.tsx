@@ -18,14 +18,11 @@ interface LoginModalProps {
 
 const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
     const [activeTab, setActiveTab] = useState('login');
-    const [loading, setLoading] = useState(false);
-
     // Captcha Hook
     const { data: checkCodeData, refetch: refreshCheckCode } = useCheckCode();
     const loginMutation = useLoginAccount();
     const setUserInfo = useUserStore((state) => state.setUserInfo);
     const onFinish = (values: any) => {
-        setLoading(true);
         const submitValues = {
             ...values,
             password: md5(values.password).toString(),
@@ -34,8 +31,6 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
 
         loginMutation.mutate(submitValues, {
             onSuccess: (data) => {
-                console.log('登录返回数据:', data);
-                setLoading(false);
                 if (data) {
                     setUserInfo(data);
                     message.success('登录成功');
@@ -45,7 +40,6 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                 }
             },
             onError: (error: any) => {
-                setLoading(false);
                 message.error(error.msg || '登录失败');
                 refreshCheckCode();
             },
@@ -154,7 +148,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                                 type="primary"
                                                 htmlType="submit"
                                                 block
-                                                loading={loading}
+                                                loading={loginMutation.isPending}
                                                 className="h-10 text-base mt-2 bg-bili-pink border-bili-pink hover:!bg-bili-pink-hover hover:!border-bili-pink-hover"
                                             >
                                                 登录
@@ -214,7 +208,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                                 type="primary"
                                                 htmlType="submit"
                                                 block
-                                                loading={loading}
+                                                loading={loginMutation.isPending}
                                                 className="h-10 text-base mt-2 bg-bili-pink border-bili-pink hover:!bg-bili-pink-hover hover:!border-bili-pink-hover"
                                             >
                                                 注册
