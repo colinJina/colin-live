@@ -9,6 +9,7 @@ const routes = createRoutesFromElements(
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="*" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/v/:categoryCode" element={<Home />}></Route>
         </Route>
     </>,
 );

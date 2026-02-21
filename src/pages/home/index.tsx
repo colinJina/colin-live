@@ -1,4 +1,8 @@
-import '@solana/wallet-adapter-react-ui/styles.css';
+import CategoryModule from './components/category-module';
 export default function Home() {
-    return <div>1</div>;
+    return (
+        <main>
+            <CategoryModule />
+        </main>
+    );
 }
