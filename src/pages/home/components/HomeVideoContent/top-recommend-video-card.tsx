@@ -17,7 +17,7 @@ const TopRecommendVideoCard: FC<TopRecommendVideoCardProps> = ({ videos, isLoadi
         <div className="flex-1">
             <div className="grid grid-cols-4 gap-4">
                 {videos.map((video) => (
-                    <VideoCard key={video.videoId} className="h-[180px]" video={video}></VideoCard>
+                    <VideoCard key={video.videoId} video={video}></VideoCard>
                 ))}
             </div>
         </div>

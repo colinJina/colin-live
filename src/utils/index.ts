@@ -76,3 +76,29 @@ export const formatVideoTime = (dateStr: string): string => {
     // 6. 跨年 -> 2024-08-03
     return date.format('YYYY-MM-DD');
 };
+
+/**
+ * 将时长（秒）转换为 C 端展示格式 (mm:ss 或 HH:mm:ss)
+ * @param duration 秒数或可转为数字的字符串
+ */
+export function formatDuration(duration: number | string | undefined): string {
+    if (!duration) return '00:00';
+
+    const totalSeconds = Math.floor(Number(duration));
+    if (isNaN(totalSeconds) || totalSeconds <= 0) return '00:00';
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    // 补零函数
+    const pad = (num: number) => String(num).padStart(2, '0');
+
+    if (hours > 0) {
+        // 超过 1 小时，展示格式：01:12:30
+        return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    } else {
+        // 不足 1 小时，展示格式：05:20
+        return `${pad(minutes)}:${pad(seconds)}`;
+    }
+}
