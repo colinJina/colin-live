@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import type { CategoryInfo } from '../../../api/category';
 import { useAllCategory } from '../../../hooks/queries/useCategory';
 import { cn } from '../../../utils';
-import DetailVideo from './detail-video';
+import VideoCardPage from './video-card';
 
 function getActiveCode(rawCode?: string) {
     if (!rawCode) return '';
@@ -111,7 +111,7 @@ export default function BreadcrumbCategory() {
                     )}
                 </div>
 
-                <DetailVideo pCategoryId={pCategoryId} categoryId={categoryId} />
+                <VideoCardPage pCategoryId={pCategoryId} categoryId={categoryId} />
             </div>
         </section>
     );

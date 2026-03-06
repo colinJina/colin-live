@@ -1,7 +1,8 @@
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from 'react-router-dom';
 
-import Home from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
+import BreadcrumbCategory from '../pages/home/components/breadcrumb-category';
+import Home from '../pages/home';
 
 const routes = createRoutesFromElements(
     <>
@@ -9,8 +10,8 @@ const routes = createRoutesFromElements(
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="*" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/v/:categoryCode" element={<Home />} />
-            <Route path="/v/:categoryCode/:subCategoryCode" element={<Home />} />
+            {/* <Route path="/v/hot" element={<Hot />} /> */}
+            <Route path="/v/:categoryCode/:subCategoryCode?" element={<BreadcrumbCategory />} />
         </Route>
     </>,
 );

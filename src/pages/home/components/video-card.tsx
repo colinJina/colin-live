@@ -30,7 +30,7 @@ function VideoCard({ video }: { video: VideoInfo }) {
     );
 }
 
-export default function DetailVideo({ pCategoryId, categoryId, className }: DetailVideoProps) {
+export default function VideoCardPage({ pCategoryId, categoryId, className }: DetailVideoProps) {
     const enabled = Boolean(pCategoryId);
     const {
         data,
