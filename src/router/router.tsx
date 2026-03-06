@@ -2,7 +2,6 @@ import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from '
 
 import Home from '../pages/home';
 import MainLayout from '../pages/layout/main-layout';
-import BreadcrumbCategory from '../pages/home/components/breadcrumb-category';
 
 const routes = createRoutesFromElements(
     <>
@@ -10,7 +9,8 @@ const routes = createRoutesFromElements(
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="*" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/v/:categoryCode" element={<BreadcrumbCategory />} />
+            <Route path="/v/:categoryCode" element={<Home />} />
+            <Route path="/v/:categoryCode/:subCategoryCode" element={<Home />} />
         </Route>
     </>,
 );
