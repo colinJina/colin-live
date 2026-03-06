@@ -13,11 +13,13 @@ import { useUserCountInfo } from '../../hooks/queries/useAuth';
 import { useUserStore } from '../../stores/useUserStore';
 import { cn, getAvatarSrc } from '../../utils';
 import CategoryModule from '../home/components/category-module';
+import { useNavigate } from 'react-router-dom';
 
 const { Search } = Input;
 const renderCount = (value?: number) => (typeof value === 'number' ? value : '--');
 
 export default function LayoutHeader() {
+    const navigate = useNavigate();
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const userInfo = useUserStore((state) => state.userInfo);
     const clearUserInfo = useUserStore((state) => state.clearUserInfo);
@@ -40,7 +42,12 @@ export default function LayoutHeader() {
             >
                 <div className="absolute top-0 left-0 right-0 z-40 flex justify-between items-center h-16 px-6 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-[2px]">
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5 cursor-pointer group">
+                        <div
+                            className="flex items-center gap-1.5 cursor-pointer group"
+                            onClick={() => {
+                                navigate('/home');
+                            }}
+                        >
                             <Zhuzhan className="w-5 h-5 text-white drop-shadow-md group-hover:scale-110 transition-transform" />
                             <span className="text-white text-[15px] font-medium drop-shadow-md">
                                 首页

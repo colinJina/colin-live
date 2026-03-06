@@ -1,8 +1,8 @@
-import RecommendVideo from './recommend-video';
+import RecommendVideoCard from './recommend-video-card';
 export default function HomeVideoContent() {
     return (
         <div>
-            <RecommendVideo></RecommendVideo>
+            <RecommendVideoCard></RecommendVideoCard>
         </div>
     );
 }

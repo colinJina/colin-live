@@ -74,3 +74,16 @@ export const loadVideo = (params: LoadVideoParams) => {
         params,
     });
 };
+
+export interface ResponseVO<T = unknown> {
+    code: number;
+    info: string;
+    data: T;
+}
+
+export const loadRecommendVideo = (): Promise<ResponseVO<VideoInfo[]> | null> => {
+    return request<VideoInfo[]>({
+        url: '/video/loadRecommendVideo',
+        method: 'GET',
+    }) as Promise<ResponseVO<VideoInfo[]> | null>;
+};

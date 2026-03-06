@@ -1,6 +1,11 @@
-import { type InfiniteData, useInfiniteQuery } from '@tanstack/react-query';
+import { type InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
-import { loadVideo, type PaginationResultVO, type VideoInfo } from '../../api/video';
+import {
+    loadRecommendVideo,
+    loadVideo,
+    type PaginationResultVO,
+    type VideoInfo,
+} from '../../api/video';
 
 type UseLoadVideoArgs = {
     pCategoryId?: number;
@@ -39,6 +44,17 @@ export const useLoadVideoByCategory = ({ pCategoryId, categoryId, enabled }: Use
             if (!lastPage.pageTotal) return undefined;
             if (lastPage.pageNo >= lastPage.pageTotal) return undefined;
             return lastPage.pageNo + 1;
+        },
+        refetchOnWindowFocus: false,
+    });
+};
+
+export const useLoadRecommendVideo = () => {
+    return useQuery<VideoInfo[]>({
+        queryKey: ['video', 'loadRecommendVideo'],
+        queryFn: async () => {
+            const response = await loadRecommendVideo();
+            return response?.data ?? [];
         },
         refetchOnWindowFocus: false,
     });

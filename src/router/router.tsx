@@ -3,6 +3,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from '
 import MainLayout from '../pages/layout/main-layout';
 import BreadcrumbCategory from '../pages/home/components/breadcrumb-category';
 import Home from '../pages/home';
+import VideoDetailPlaceholder from '../pages/video/video-detail-placeholder';
 
 const routes = createRoutesFromElements(
     <>
@@ -10,6 +11,7 @@ const routes = createRoutesFromElements(
             <Route path="/" element={<Navigate to="/home" />} />
             <Route path="*" element={<Navigate to="/home" />} />
             <Route path="/home" element={<Home />} />
+            <Route path="/video/:videoId" element={<VideoDetailPlaceholder />} />
             {/* <Route path="/v/hot" element={<Hot />} /> */}
             <Route path="/v/:categoryCode/:subCategoryCode?" element={<BreadcrumbCategory />} />
         </Route>
