@@ -1,7 +1,12 @@
 import CryptoJS from 'crypto-js';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/zh-cn'; // 引入中文语言包
 
+dayjs.extend(relativeTime);
+dayjs.locale('zh-cn');
 /**
  * MD5 加密
  * @param str 需要加密的字符串
@@ -34,3 +39,40 @@ export function getAvatarSrc(avatar: string | undefined | null) {
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
+
+/**
+ * C端时间格式化工具
+ * @param dateStr 后端返回的时间字符串 "2024-08-03 21:25:55"
+ */
+export const formatVideoTime = (dateStr: string): string => {
+    if (!dateStr) return '';
+    // 兼容 iOS Safari 的处理：将 "-" 替换为 "/"
+    const date = dayjs(dateStr.replace(/-/g, '/'));
+    const now = dayjs();
+
+    const diffMinutes = now.diff(date, 'minute');
+    const diffHours = now.diff(date, 'hour');
+
+    // 1. 一分钟内 -> 刚刚
+    if (diffMinutes < 1) {
+        return '刚刚';
+    }
+    // 2. 一小时内 -> X分钟前
+    if (diffMinutes < 60) {
+        return `${diffMinutes}分钟前`;
+    }
+    // 3. 24小时内 -> X小时前
+    if (diffHours < 24) {
+        return `${diffHours}小时前`;
+    }
+    // 4. 昨天 -> 昨天 21:25
+    if (now.subtract(1, 'day').isSame(date, 'day')) {
+        return `昨天 ${date.format('HH:mm')}`;
+    }
+    // 5. 今年内 -> 08-03
+    if (now.isSame(date, 'year')) {
+        return date.format('MM-DD');
+    }
+    // 6. 跨年 -> 2024-08-03
+    return date.format('YYYY-MM-DD');
+};

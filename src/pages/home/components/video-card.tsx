@@ -1,5 +1,6 @@
 import type { VideoInfo } from '../../../api/video';
-import { cn, getAvatarSrc } from '../../../utils';
+import { cn, formatVideoTime, getAvatarSrc } from '../../../utils';
+import UpIcon from '../../../assets/icon/up-icon.svg?react';
 interface VideoCardProps {
     video: VideoInfo;
     className?: string;
@@ -22,7 +23,12 @@ export function VideoCard({ video, className }: VideoCardProps) {
                 <div className="line-clamp-2 text-[13px] font-medium text-[#18191c]">
                     视频 ID：{video.videoId}
                 </div>
-                <div className="mt-1 text-[12px] text-[#9499a0]">暂无更多字段可展示</div>
+                <div className="flex mt-1 gap-1 text-[12px] text-[#9499a0]">
+                    <UpIcon className="size-5"></UpIcon>
+                    <span>{video.nickName ?? '神秘up主~'}</span>
+                    <span>{'·'}</span>
+                    <span>{formatVideoTime(video.createTime as string)}</span>
+                </div>
             </div>
         </div>
     );
