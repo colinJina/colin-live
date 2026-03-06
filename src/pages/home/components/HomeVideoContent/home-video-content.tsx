@@ -12,7 +12,7 @@ export default function HomeVideoContent() {
 
     return (
         <>
-            <div className="flex items-start gap-4">
+            <div className="flex items-stretch gap-4">
                 <div className="shrink-0">
                     <CarouselVideoCard
                         videos={carouselVideos}

@@ -15,7 +15,7 @@ export default function HomeVideoCard({ className }: HomeVideoCardProps) {
     const list: VideoInfo[] = data ?? [];
 
     return (
-        <div className={cn('mt-3 flex-1', className)}>
+        <div className={cn('mt-3 px-4 flex-1', className)}>
             <div className="mb-3 flex items-center justify-between text-xs text-[#9499a0]">
                 <span>推荐视频</span>
                 <Button
