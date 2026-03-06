@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import type { CategoryInfo } from '../../../api/category';
 import { useAllCategory } from '../../../hooks/queries/useCategory';
 import { cn } from '../../../utils';
-import VideoCardPage from './video-card';
+import VideoCardPage from './video-card-page';
 
 function getActiveCode(rawCode?: string) {
     if (!rawCode) return '';

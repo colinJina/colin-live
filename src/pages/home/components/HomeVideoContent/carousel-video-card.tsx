@@ -1,17 +1,30 @@
-﻿import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Carousel, Empty, Spin } from 'antd';
 import type { CarouselRef } from 'antd/es/carousel';
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useLoadRecommendVideo } from '../../../../hooks/queries/useVideo';
+import type { VideoInfo } from '../../../../api/video';
 import { getAvatarSrc } from '../../../../utils';
 
-export default function RecommendVideoCard() {
+type CarouselVideoCardProps = {
+    videos: VideoInfo[];
+    isLoading: boolean;
+    isError: boolean;
+    onRetry: () => void;
+};
+
+export default function CarouselVideoCard({
+    videos,
+    isLoading,
+    isError,
+    onRetry,
+}: CarouselVideoCardProps) {
     const navigate = useNavigate();
     const carouselRef = useRef<CarouselRef>(null);
-    const { data = [], isLoading, isError, refetch } = useLoadRecommendVideo();
-    const renderData = data.slice(0, 5);
+
+    const renderData = videos.slice(0, 5);
+
     const onOpenVideo = (videoId: string) => {
         if (!videoId) return;
         navigate(`/video/${encodeURIComponent(videoId)}`);
@@ -28,7 +41,7 @@ export default function RecommendVideoCard() {
             {!isLoading && isError && (
                 <div className="flex h-[320px] flex-col items-center justify-center rounded-2xl bg-[#fff2f5] px-4">
                     <p className="text-sm text-[#61666d]">推荐视频加载失败，请稍后重试</p>
-                    <Button className="mt-3 rounded-xl!" onClick={() => refetch()}>
+                    <Button className="mt-3 rounded-xl!" onClick={onRetry}>
                         重试
                     </Button>
                 </div>
@@ -73,7 +86,7 @@ export default function RecommendVideoCard() {
                                         className="h-full w-full bg-[#f1f2f3] object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                                     />
 
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
+                                    <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/30 to-transparent" />
 
                                     <div className="absolute right-0 bottom-0 left-0 p-5">
                                         <div className="text-base font-semibold text-white">
