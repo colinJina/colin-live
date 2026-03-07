@@ -362,6 +362,12 @@ export default function VideoDetailCard() {
         <main className="mx-auto w-full max-w-[1380px] px-4 py-6">
             <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
                 <div className="min-w-0 flex flex-col gap-4">
+                    <VideoSummaryCard
+                        videoInfo={videoInfoData?.videoInfo}
+                        currentP={currentP}
+                        currentVideo={currentVideo}
+                        videoId={videoId}
+                    />
                     <div className="overflow-hidden rounded-[16px] border border-[#e9edf5] bg-white shadow-sm">
                         <div className="relative aspect-video w-full bg-black">
                             <div ref={playerRef} className="absolute inset-0 h-full w-full" />
@@ -433,13 +439,6 @@ export default function VideoDetailCard() {
                             </div>
                         </div>
                     </div>
-
-                    <VideoSummaryCard
-                        currentP={currentP}
-                        currentVideo={currentVideo}
-                        videoId={videoId}
-                        videoListLength={videoList.length}
-                    />
                 </div>
 
                 <aside className="flex min-h-0 flex-col gap-4">
