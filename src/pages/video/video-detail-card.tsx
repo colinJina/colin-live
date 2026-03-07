@@ -93,19 +93,29 @@ export default function VideoDetailCard() {
     const { data: authorInfo } = useGetAuthorInfo(authorUserId);
     const { data: videoList = [], isLoading: isVideoListLoading } = useVideoPlaylist(videoId ?? '');
     const userInfo = useUserStore((state) => state.userInfo);
-    const authorProfile = {
-        userId: authorInfo?.userId ?? authorUserId,
-        nickName: authorInfo?.nickName ?? baseVideoInfo?.nickName ?? '作者',
-        avatar: authorInfo?.avatar ?? baseVideoInfo?.avatar ?? '',
-        introduction:
-            authorInfo?.introduction ??
-            authorInfo?.signature ??
-            baseVideoInfo?.introduction ??
-            '这个作者还没有填写简介。',
-        fansCount: authorInfo?.fansCount,
-        focusCount: authorInfo?.focusCount,
-    };
+    const authorProfile = useMemo(() => {
+        const fallback = {
+            userId: authorUserId || '',
+            nickName: baseVideoInfo?.nickName || 'UP主',
+            avatar: baseVideoInfo?.avatar || '',
+            introduction: baseVideoInfo?.introduction || '这个作者还没有填写简介。',
+            fansCount: 0,
+            focusCount: 0,
+            haveFocus: false,
+        };
 
+        if (!authorInfo) return fallback;
+
+        return {
+            userId: authorInfo.userId,
+            nickName: authorInfo.nickName ?? fallback.nickName,
+            avatar: authorInfo.avatar ?? fallback.avatar,
+            introduction: authorInfo.personIntroduction || fallback.introduction,
+            fansCount: authorInfo.fansCount ?? 0,
+            focusCount: authorInfo.focusCount ?? 0,
+            haveFocus: authorInfo.haveFocus ?? false,
+        };
+    }, [authorInfo, authorUserId, baseVideoInfo]);
     const currentP = useMemo(
         () => getValidP(searchParams.get('p'), videoList.length),
         [searchParams, videoList.length],
