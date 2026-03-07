@@ -1,10 +1,13 @@
 import { type InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 import {
+    getVideoInfo,
     loadRecommendVideo,
     loadVideo,
+    loadVideoPList,
     type PaginationResultVO,
     type VideoInfo,
+    type VideoInfoFile,
 } from '../../api/video';
 
 type UseLoadVideoArgs = {
@@ -54,6 +57,30 @@ export const useLoadRecommendVideo = () => {
         queryKey: ['video', 'loadRecommendVideo'],
         queryFn: async () => {
             const response = await loadRecommendVideo();
+            return response?.data ?? [];
+        },
+        refetchOnWindowFocus: false,
+    });
+};
+
+export const useVideoInfo = (videoId: string) => {
+    return useQuery({
+        queryKey: ['videoInfo', videoId],
+        queryFn: async () => {
+            const response = await getVideoInfo(videoId);
+            return response?.data;
+        },
+        enabled: !!videoId,
+    });
+};
+
+export const useVideoPlaylist = (videoId: string) => {
+    return useQuery<VideoInfoFile[]>({
+        queryKey: ['video', 'loadVideoPList', videoId],
+        enabled: Boolean(videoId),
+        queryFn: async () => {
+            if (!videoId) return [];
+            const response = await loadVideoPList(videoId);
             return response?.data ?? [];
         },
         refetchOnWindowFocus: false,

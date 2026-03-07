@@ -4,17 +4,16 @@ import Artplayer from 'artplayer';
 import artplayerPluginDanmuku from 'artplayer-plugin-danmuku';
 import Hls from 'hls.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
-import {
-    loadDanmu,
-    loadVideoPList,
-    postDanmu,
-    type PostDanmuParams,
-    type VideoDanmu,
-    type VideoInfoFile,
-} from '../../api/video';
-import { cn, formatDuration } from '../../utils';
+import { loadDanmu, postDanmu, type PostDanmuParams, type VideoDanmu } from '../../api/video';
+import { useGetAuthorInfo } from '../../hooks/queries/useUhome';
+import { useVideoInfo, useVideoPlaylist } from '../../hooks/queries/useVideo';
+
+import { VideoAuthorCard } from './components/video-author-card';
+import { VideoDanmuList } from './components/video-danmu-list';
+import { VideoPlaylistPanel } from './components/video-playlist-panel';
+import { VideoSummaryCard } from './components/video-summary-card';
 
 type DanmuSendMode = 1 | 4 | 5;
 type DanmuQueryData = VideoDanmu[] | { list?: VideoDanmu[] } | null;
@@ -62,7 +61,14 @@ const formatDanmuTime = (value: number) => {
     return `${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
 };
 
+const getDanmuModeForArtplayer = (mode: number | string) => {
+    if (mode === 4 || mode === '4' || mode === 'bottom') return 1;
+    if (mode === 5 || mode === '5' || mode === 'top') return 2;
+    return 0;
+};
+
 export default function VideoDetailCard() {
+    const navigate = useNavigate();
     const { videoId } = useParams<{ videoId: string }>();
     const [searchParams, setSearchParams] = useSearchParams();
     const [autoPlayNext, setAutoPlayNext] = useState(true);
@@ -75,16 +81,24 @@ export default function VideoDetailCard() {
     const optimisticDanmuIdRef = useRef(0);
     const queryClient = useQueryClient();
 
-    const { data: videoList = [], isLoading } = useQuery<VideoInfoFile[]>({
-        queryKey: ['video', 'loadVideoPList', videoId],
-        enabled: Boolean(videoId),
-        queryFn: async () => {
-            if (!videoId) return [];
-            const response = await loadVideoPList(videoId);
-            return response?.data ?? [];
-        },
-        refetchOnWindowFocus: false,
-    });
+    const { data: videoInfoData } = useVideoInfo(videoId ?? '');
+    const baseVideoInfo = videoInfoData?.videoInfo;
+    const authorUserId = baseVideoInfo?.userId ?? '';
+    const { data: authorInfo } = useGetAuthorInfo(authorUserId);
+    const { data: videoList = [], isLoading: isVideoListLoading } = useVideoPlaylist(videoId ?? '');
+
+    const authorProfile = {
+        userId: authorInfo?.userId ?? authorUserId,
+        nickName: authorInfo?.nickName ?? baseVideoInfo?.nickName ?? '作者',
+        avatar: authorInfo?.avatar ?? baseVideoInfo?.avatar ?? '',
+        introduction:
+            authorInfo?.introduction ??
+            authorInfo?.signature ??
+            baseVideoInfo?.introduction ??
+            '这个作者还没有填写简介。',
+        fansCount: authorInfo?.fansCount,
+        focusCount: authorInfo?.focusCount,
+    };
 
     const currentP = useMemo(
         () => getValidP(searchParams.get('p'), videoList.length),
@@ -186,12 +200,11 @@ export default function VideoDetailCard() {
                 },
             );
 
-            // 让 Artplayer 发射弹幕
             if (playerInstance.current && showDanmu) {
                 const plugin = playerInstance.current.plugins.artplayerPluginDanmuku as
                     | DanmukuPlugin
                     | undefined;
-                if (plugin && plugin.emit) {
+                if (plugin?.emit) {
                     plugin.emit({
                         text: optimisticItem.text,
                         color: optimisticItem.color,
@@ -209,13 +222,6 @@ export default function VideoDetailCard() {
         },
     });
 
-    const getDanmuModeForArtplayer = (mode: number | string) => {
-        if (mode === 4 || mode === '4' || mode === 'bottom') return 1; // Artplayer bottom
-        if (mode === 5 || mode === '5' || mode === 'top') return 2; // Artplayer top
-        return 0; // Artplayer scroll
-    };
-
-    // 初始化 Artplayer
     useEffect(() => {
         if (!playerRef.current || !currentFileId) return;
 
@@ -246,7 +252,7 @@ export default function VideoDetailCard() {
                     }
                 },
             },
-            theme: '#fb7299', // B站粉色主题
+            theme: '#fb7299',
             volume: 0.7,
             autoplay: true,
             autoMini: false,
@@ -276,7 +282,7 @@ export default function VideoDetailCard() {
                         }));
                     },
                     theme: 'light',
-                    emitter: false, // 自定义发送
+                    emitter: false,
                     speed: 5,
                 }),
             ],
@@ -287,9 +293,6 @@ export default function VideoDetailCard() {
                     html: '<span class="text-sm">宽屏模式</span>',
                     tooltip: '宽屏模式',
                     style: { color: '#fff' },
-                    click: function () {
-                        // 可以根据需要实现宽屏逻辑
-                    },
                 },
             ],
         });
@@ -309,7 +312,6 @@ export default function VideoDetailCard() {
         };
     }, [currentFileId, videoId, autoPlayNext, currentP, selectVideo, videoList.length]);
 
-    // 监听弹幕开关
     useEffect(() => {
         if (!playerInstance.current) return;
         const plugin = playerInstance.current.plugins.artplayerPluginDanmuku as
@@ -317,9 +319,9 @@ export default function VideoDetailCard() {
             | undefined;
         if (!plugin) return;
         if (showDanmu) {
-            if (plugin.show) plugin.show();
+            plugin.show?.();
         } else {
-            if (plugin.hide) plugin.hide();
+            plugin.hide?.();
         }
     }, [showDanmu]);
 
@@ -350,23 +352,20 @@ export default function VideoDetailCard() {
     return (
         <main className="mx-auto w-full max-w-[1380px] px-4 py-6">
             <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
-                {/* 左侧：播放器 + 控制条 */}
                 <div className="min-w-0 flex flex-col gap-4">
                     <div className="overflow-hidden rounded-[16px] border border-[#e9edf5] bg-white shadow-sm">
-                        <div className="relative bg-black w-full aspect-video">
-                            {/* Artplayer 容器 */}
-                            <div ref={playerRef} className="absolute inset-0 w-full h-full" />
+                        <div className="relative aspect-video w-full bg-black">
+                            <div ref={playerRef} className="absolute inset-0 h-full w-full" />
                         </div>
 
-                        {/* 弹幕发送栏 (类似 Bilibili 底部) */}
                         <div className="flex items-center gap-4 border-t border-[#eef2f7] bg-white px-5 py-3 shadow-sm">
-                            <div className="flex items-center text-sm text-gray-500 whitespace-nowrap">
+                            <div className="flex items-center whitespace-nowrap text-sm text-gray-500">
                                 <span>{danmuList.length} 人正在看</span>
-                                <span className="mx-2">，</span>
+                                <span className="mx-2">·</span>
                                 <span>已装填 {danmuList.length} 条弹幕</span>
                             </div>
 
-                            <div className="flex items-center gap-2 border-l pl-4 border-[#eef2f7]">
+                            <div className="flex items-center gap-2 border-l border-[#eef2f7] pl-4">
                                 <Switch checked={showDanmu} onChange={setShowDanmu} size="small" />
                                 <span className="text-xs text-gray-400">
                                     {showDanmu ? '弹幕开' : '弹幕关'}
@@ -379,17 +378,14 @@ export default function VideoDetailCard() {
                                     value={danmuMode}
                                     onChange={(value) => setDanmuMode(value as DanmuSendMode)}
                                     options={DANMU_MODE_OPTIONS}
-                                    className="w-[70px] -ml-2 text-xs"
+                                    className="-ml-2 w-[70px] text-xs"
                                     popupMatchSelectWidth={false}
                                 />
                                 <Select
                                     variant="borderless"
                                     value={danmuColor}
                                     onChange={setDanmuColor}
-                                    options={DANMU_COLOR_OPTIONS.map((item) => ({
-                                        label: item.label,
-                                        value: item.value,
-                                    }))}
+                                    options={DANMU_COLOR_OPTIONS}
                                     className="w-[80px] text-xs"
                                     popupMatchSelectWidth={false}
                                     optionRender={(option) => {
@@ -414,14 +410,14 @@ export default function VideoDetailCard() {
                                     onChange={(event) => setDanmuText(event.target.value)}
                                     onPressEnter={handleSendDanmu}
                                     placeholder="发个友善的弹幕见证当下"
-                                    className="min-w-0 flex-1 text-sm bg-transparent !shadow-none"
+                                    className="min-w-0 flex-1 bg-transparent text-sm !shadow-none"
                                 />
                                 <Button
                                     type="primary"
                                     loading={postDanmuMutation.isPending}
                                     onClick={handleSendDanmu}
                                     size="small"
-                                    className="rounded-full bg-[#fb7299] px-4 border-none hover:!bg-[#fc8bab]"
+                                    className="rounded-full border-none bg-[#fb7299] px-4 hover:!bg-[#fc8bab]"
                                 >
                                     发送
                                 </Button>
@@ -429,133 +425,38 @@ export default function VideoDetailCard() {
                         </div>
                     </div>
 
-                    {/* 视频信息区域 */}
-                    <div className="rounded-[16px] bg-white p-5 shadow-sm border border-[#e9edf5]">
-                        <h1 className="text-xl font-medium text-[#18191c] mb-3">
-                            {currentVideo
-                                ? `${currentP}. ${currentVideo.fileName || currentVideo.title || `P${currentP}`}`
-                                : videoId
-                                  ? `视频 ${videoId}`
-                                  : '视频详情'}
-                        </h1>
-                        <div className="flex flex-wrap items-center gap-4 text-xs text-[#9499a0]">
-                            <span>视频 ID: {videoId ?? '--'}</span>
-                            <span>文件 ID: {currentVideo?.fileId ?? '--'}</span>
-                            <span>
-                                分 P: {videoList.length ? `${currentP}/${videoList.length}` : '--'}
-                            </span>
-                        </div>
-                    </div>
+                    <VideoSummaryCard
+                        currentP={currentP}
+                        currentVideo={currentVideo}
+                        videoId={videoId}
+                        videoListLength={videoList.length}
+                    />
                 </div>
 
-                {/* 右侧：弹幕列表 + 选集 */}
                 <aside className="flex min-h-0 flex-col gap-4">
-                    {/* 弹幕列表 */}
-                    <section className="flex flex-1 flex-col overflow-hidden rounded-[16px] border border-[#e8edf5] bg-white shadow-sm">
-                        <div className="flex items-center justify-between border-b border-[#edf1f6] bg-[#fbfbfb] px-4 py-3">
-                            <div className="text-[15px] font-medium text-[#18191c]">弹幕列表</div>
-                            <span className="text-xs text-[#9499a0]">展开</span>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto max-h-[300px] px-2 py-2 text-sm bg-[#fcfcfc]">
-                            {isDanmuLoading ? (
-                                <div className="py-10 text-center text-[#9499a0]">加载中...</div>
-                            ) : sortedDanmuList.length > 0 ? (
-                                sortedDanmuList.map((item) => {
-                                    const text = normalizeDanmuText(item);
-                                    return (
-                                        <div
-                                            key={String(item.danmuId)}
-                                            className="group flex items-center justify-between gap-3 px-3 py-1.5 hover:bg-[#f4f5f7] rounded-md transition"
-                                        >
-                                            <span className="w-12 shrink-0 text-xs text-[#9499a0]">
-                                                {formatDanmuTime(getDanmuTime(item))}
-                                            </span>
-                                            <p
-                                                className="min-w-0 flex-1 truncate text-[#18191c]"
-                                                title={text}
-                                            >
-                                                {text || '---'}
-                                            </p>
-                                            <span className="shrink-0 text-xs text-[#9499a0] opacity-0 group-hover:opacity-100 transition">
-                                                {item.createTime
-                                                    ? new Date(item.createTime).toLocaleDateString()
-                                                    : ''}
-                                            </span>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <div className="py-10 text-center text-[#9499a0]">暂无弹幕</div>
-                            )}
-                        </div>
-                    </section>
-
-                    {/* 视频选集 */}
-                    <section className="flex flex-col overflow-hidden rounded-[16px] border border-[#e8edf5] bg-[#f6f7f9] shadow-sm">
-                        <div className="flex items-center justify-between border-b border-black/5 px-4 py-3 bg-white">
-                            <div className="text-[15px] font-medium text-[#18191c]">
-                                视频选集
-                                <span className="ml-2 text-xs font-normal text-[#9499a0]">
-                                    ({videoList.length ? `${currentP}/${videoList.length}` : '0/0'})
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-[#9499a0]">自动连播</span>
-                                <Switch
-                                    checked={autoPlayNext}
-                                    onChange={setAutoPlayNext}
-                                    size="small"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="max-h-[300px] space-y-1.5 overflow-y-auto px-3 py-3 bg-white">
-                            {isLoading ? (
-                                <div className="py-8 text-center text-sm text-[#9499a0]">
-                                    加载中...
-                                </div>
-                            ) : videoList.length > 0 ? (
-                                videoList.map((item, index) => {
-                                    const active = index === currentP - 1;
-                                    return (
-                                        <button
-                                            key={item.fileId}
-                                            type="button"
-                                            onClick={() => selectVideo(index + 1)}
-                                            className={cn(
-                                                'flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition text-sm',
-                                                active
-                                                    ? 'bg-[#f4f5f7] text-[#fb7299]'
-                                                    : 'bg-white hover:bg-[#f4f5f7] text-[#18191c]',
-                                            )}
-                                        >
-                                            <span className="w-5 shrink-0 text-center text-[#9499a0]">
-                                                {active ? (
-                                                    <span className="text-[#fb7299]">▶</span>
-                                                ) : (
-                                                    index + 1
-                                                )}
-                                            </span>
-                                            <div
-                                                className="min-w-0 flex-1 truncate"
-                                                title={item.title || item.fileName}
-                                            >
-                                                {item.fileName || item.title || `P${index + 1}`}
-                                            </div>
-                                            <div className="shrink-0 text-xs text-[#9499a0]">
-                                                {formatDuration(item.duration)}
-                                            </div>
-                                        </button>
-                                    );
-                                })
-                            ) : (
-                                <div className="py-8 text-center text-sm text-[#9499a0]">
-                                    暂无分集
-                                </div>
-                            )}
-                        </div>
-                    </section>
+                    <VideoAuthorCard
+                        authorProfile={authorProfile}
+                        onVisitHome={() => {
+                            if (authorProfile.userId) {
+                                navigate(`/uhome/${encodeURIComponent(authorProfile.userId)}`);
+                            }
+                        }}
+                    />
+                    <VideoDanmuList
+                        danmuList={sortedDanmuList}
+                        isLoading={isDanmuLoading}
+                        formatDanmuTime={formatDanmuTime}
+                        getDanmuTime={getDanmuTime}
+                        normalizeDanmuText={normalizeDanmuText}
+                    />
+                    <VideoPlaylistPanel
+                        autoPlayNext={autoPlayNext}
+                        currentP={currentP}
+                        isLoading={isVideoListLoading}
+                        videoList={videoList}
+                        onSelectVideo={selectVideo}
+                        onToggleAutoPlayNext={setAutoPlayNext}
+                    />
                 </aside>
             </section>
         </main>
