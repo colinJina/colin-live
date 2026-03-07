@@ -2,13 +2,16 @@ import { type InfiniteData, useInfiniteQuery, useQuery } from '@tanstack/react-q
 
 import {
     getVideoInfo,
+    loadDanmu,
     loadRecommendVideo,
     loadVideo,
     loadVideoPList,
     type PaginationResultVO,
+    type VideoDanmu,
     type VideoInfo,
     type VideoInfoFile,
 } from '../../api/video';
+import { useUserStore } from '../../stores/useUserStore';
 
 type UseLoadVideoArgs = {
     pCategoryId?: number;
@@ -82,6 +85,23 @@ export const useVideoPlaylist = (videoId: string) => {
             if (!videoId) return [];
             const response = await loadVideoPList(videoId);
             return response?.data ?? [];
+        },
+        refetchOnWindowFocus: false,
+    });
+};
+
+export type DanmuQueryData = VideoDanmu[] | { list?: VideoDanmu[] } | null;
+
+export const useVideoDanmu = (videoId?: string, fileId?: string) => {
+    const userInfo = useUserStore((state) => state.userInfo);
+
+    return useQuery<DanmuQueryData>({
+        queryKey: ['video', 'loadDanmu', videoId, fileId, userInfo?.userId ?? 'guest'],
+        enabled: Boolean(videoId && fileId && userInfo),
+        queryFn: async () => {
+            if (!videoId || !fileId || !userInfo) return null;
+            const response = await loadDanmu(fileId, videoId);
+            return response?.data ?? null;
         },
         refetchOnWindowFocus: false,
     });

@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button, Input, Select, Switch, message } from 'antd';
 import Artplayer from 'artplayer';
 import artplayerPluginDanmuku from 'artplayer-plugin-danmuku';
@@ -8,7 +8,14 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import { loadDanmu, postDanmu, type PostDanmuParams, type VideoDanmu } from '../../api/video';
 import { useGetAuthorInfo } from '../../hooks/queries/useUhome';
-import { useVideoInfo, useVideoPlaylist } from '../../hooks/queries/useVideo';
+import {
+    useVideoDanmu,
+    useVideoInfo,
+    useVideoPlaylist,
+    type DanmuQueryData,
+} from '../../hooks/queries/useVideo';
+import { useLoginModal } from '../../provider/login-modal-provider';
+import { useUserStore } from '../../stores/useUserStore';
 
 import { VideoAuthorCard } from './components/video-author-card';
 import { VideoDanmuList } from './components/video-danmu-list';
@@ -16,7 +23,6 @@ import { VideoPlaylistPanel } from './components/video-playlist-panel';
 import { VideoSummaryCard } from './components/video-summary-card';
 
 type DanmuSendMode = 1 | 4 | 5;
-type DanmuQueryData = VideoDanmu[] | { list?: VideoDanmu[] } | null;
 type DanmukuPlugin = {
     emit?: (payload: { text?: string; color?: string; border: boolean; mode: number }) => void;
     show?: () => void;
@@ -80,13 +86,13 @@ export default function VideoDetailCard() {
     const playerInstance = useRef<Artplayer | null>(null);
     const optimisticDanmuIdRef = useRef(0);
     const queryClient = useQueryClient();
-
+    const { openLoginModal } = useLoginModal();
     const { data: videoInfoData } = useVideoInfo(videoId ?? '');
     const baseVideoInfo = videoInfoData?.videoInfo;
     const authorUserId = baseVideoInfo?.userId ?? '';
     const { data: authorInfo } = useGetAuthorInfo(authorUserId);
     const { data: videoList = [], isLoading: isVideoListLoading } = useVideoPlaylist(videoId ?? '');
-
+    const userInfo = useUserStore((state) => state.userInfo);
     const authorProfile = {
         userId: authorInfo?.userId ?? authorUserId,
         nickName: authorInfo?.nickName ?? baseVideoInfo?.nickName ?? '作者',
@@ -112,16 +118,7 @@ export default function VideoDetailCard() {
 
     const currentFileId = currentVideo?.fileId;
 
-    const { data: danmuData, isLoading: isDanmuLoading } = useQuery({
-        queryKey: ['video', 'loadDanmu', videoId, currentFileId],
-        enabled: Boolean(videoId && currentFileId),
-        queryFn: async () => {
-            if (!videoId || !currentFileId) return null;
-            const response = await loadDanmu(currentFileId, videoId);
-            return response?.data ?? null;
-        },
-        refetchOnWindowFocus: false,
-    });
+    const { data: danmuData, isLoading: isDanmuLoading } = useVideoDanmu(videoId, currentFileId);
 
     const danmuList = useMemo(() => {
         if (Array.isArray(danmuData)) return danmuData;
@@ -185,7 +182,7 @@ export default function VideoDetailCard() {
             };
 
             queryClient.setQueryData(
-                ['video', 'loadDanmu', videoId, currentFileId],
+                ['video', 'loadDanmu', videoId, currentFileId, userInfo?.userId ?? 'guest'],
                 (prev: DanmuQueryData) => {
                     if (!prev) {
                         return [optimisticItem];
@@ -327,7 +324,10 @@ export default function VideoDetailCard() {
 
     const handleSendDanmu = useCallback(() => {
         if (!videoId || !currentVideo?.fileId || !playerInstance.current) return;
-
+        if (!userInfo) {
+            openLoginModal();
+            return;
+        }
         const text = danmuText.trim();
         if (!text) {
             message.warning('请输入弹幕内容');
@@ -347,7 +347,16 @@ export default function VideoDetailCard() {
             color: danmuColor,
             time: Math.floor(playerInstance.current.video.currentTime || 0),
         });
-    }, [currentVideo, danmuColor, danmuMode, danmuText, postDanmuMutation, videoId]);
+    }, [
+        currentVideo,
+        danmuColor,
+        danmuMode,
+        danmuText,
+        openLoginModal,
+        userInfo,
+        postDanmuMutation,
+        videoId,
+    ]);
 
     return (
         <main className="mx-auto w-full max-w-[1380px] px-4 py-6">

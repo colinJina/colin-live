@@ -1,7 +1,14 @@
 import { Input } from 'antd';
-import { useState } from 'react';
+import type { ComponentType, SVGProps } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import HeaderUploadButton from '../../component/headerUploadButton';
-import LoginModal from './login-modal';
+import { useUserCountInfo } from '../../hooks/queries/useAuth';
+import { useLoginModal } from '../../provider/login-modal-provider';
+import { useUserStore } from '../../stores/useUserStore';
+import { cn, getAvatarSrc } from '../../utils';
+import CategoryModule from '../home/components/category-module';
+
 import Collect from '@/assets/icon/collect.svg?react';
 import CreateCenter from '@/assets/icon/create-center.svg?react';
 import History from '@/assets/icon/history.svg?react';
@@ -9,31 +16,37 @@ import Message from '@/assets/icon/message.svg?react';
 import defaultAvatar from '@/assets/icon/user.svg';
 import Zhuzhan from '@/assets/icon/zhuzhan.svg?react';
 import bgImage from '@/assets/images/banner_bg.png';
-import { useUserCountInfo } from '../../hooks/queries/useAuth';
-import { useUserStore } from '../../stores/useUserStore';
-import { cn, getAvatarSrc } from '../../utils';
-import CategoryModule from '../home/components/category-module';
-import { useNavigate } from 'react-router-dom';
 
 const { Search } = Input;
 const renderCount = (value?: number) => (typeof value === 'number' ? value : '--');
+const SEARCH_PLACEHOLDER = '搜索视频、番剧或UP主';
 
 export default function LayoutHeader() {
     const navigate = useNavigate();
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const { openLoginModal } = useLoginModal();
     const userInfo = useUserStore((state) => state.userInfo);
     const clearUserInfo = useUserStore((state) => state.clearUserInfo);
     const { data: userCountInfo } = useUserCountInfo(Boolean(userInfo));
-    // 退出登录的处理函数
+
     const handleMenuClick = (item: string) => {
         if (item === '退出登录') {
             clearUserInfo();
-            // 可选：退出后跳转到首页或弹出提示
-            console.log('用户已登出');
-        } else {
-            console.log(`跳转到: ${item}`);
+            navigate('/home');
+            return;
+        }
+
+        if (item === '个人中心' && userInfo?.userId) {
+            navigate(`/uhome/${encodeURIComponent(userInfo.userId)}`);
         }
     };
+
+    const handleSearch = (value: string) => {
+        const keyword = value.trim();
+        if (!keyword) return;
+
+        navigate(`/home?keyword=${encodeURIComponent(keyword)}`);
+    };
+
     return (
         <>
             <div
@@ -58,8 +71,8 @@ export default function LayoutHeader() {
                     {/* 中间：搜索框（保持 Antd 原样） */}
                     <div className="absolute left-1/2 -translate-x-1/2 z-50">
                         <Search
-                            placeholder="input search text"
-                            onSearch={(v) => console.log(v)}
+                            placeholder={SEARCH_PLACEHOLDER}
+                            onSearch={handleSearch}
                             style={{ width: 400 }}
                         />
                     </div>
@@ -74,7 +87,7 @@ export default function LayoutHeader() {
                                     userInfo &&
                                         'group-hover/user:translate-y-6 group-hover/user:scale-[1.8]',
                                 )}
-                                onClick={() => !userInfo && setIsLoginModalOpen(true)}
+                                onClick={() => !userInfo && openLoginModal()}
                             >
                                 <img
                                     src={userInfo ? getAvatarSrc(userInfo.avatar) : defaultAvatar}
@@ -148,25 +161,18 @@ export default function LayoutHeader() {
                         <NavIcon Icon={History} label="历史" />
                         <NavIcon Icon={CreateCenter} label="创作中心" />
 
-                        {/* 投稿按钮 */}
                         <div className="cursor-pointer hover:opacity-90 active:scale-95 transition-all">
-                            <HeaderUploadButton onClick={() => console.log('upload')} />
+                            <HeaderUploadButton />
                         </div>
                     </div>
                 </div>
-
-                <LoginModal
-                    isOpen={isLoginModalOpen && !userInfo}
-                    onCancel={() => setIsLoginModalOpen(false)}
-                />
             </div>
             <CategoryModule />
         </>
     );
 }
 
-// 提取图标组件
-function NavIcon({ Icon, label }: { Icon: any; label: string }) {
+function NavIcon({ Icon, label }: { Icon: ComponentType<SVGProps<SVGSVGElement>>; label: string }) {
     return (
         <div className="flex flex-col items-center justify-center cursor-pointer group/icon">
             <Icon className="w-5 h-5 text-white drop-shadow-md group-hover/icon:-translate-y-1 transition-transform duration-300" />
