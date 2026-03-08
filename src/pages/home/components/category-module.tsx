@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+﻿import { Button } from 'antd';
 import { memo, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import type { CategoryInfo } from '../../../api/category';
@@ -123,7 +123,7 @@ export default function CategoryModule() {
 
     return (
         <div className="mx-auto w-full">
-            <section className="relative overflow-hidden rounded-[28px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,248,251,0.98)_0%,rgba(255,236,244,0.98)_52%,rgba(255,227,238,0.98)_100%)] p-3 shadow-[0_20px_48px_rgba(251,114,153,0.14)] ring-1 ring-[#ffd8e4]/70 md:p-4">
+            <section className="relative rounded-[28px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,248,251,0.98)_0%,rgba(255,236,244,0.98)_52%,rgba(255,227,238,0.98)_100%)] p-3 shadow-[0_20px_48px_rgba(251,114,153,0.14)] ring-1 ring-[#ffd8e4]/70 md:p-4">
                 <div className="pointer-events-none absolute inset-0">
                     <div className="absolute left-[-36px] top-[-42px] h-24 w-24 rounded-full bg-white/60 blur-2xl" />
                     <div className="absolute right-[10%] top-4 h-16 w-16 rounded-full bg-[#ff9fbe]/30 blur-2xl" />
