@@ -17,6 +17,7 @@ import {
 import { useLoginModal } from '../../provider/login-modal-provider';
 import { useUserStore } from '../../stores/useUserStore';
 
+import UserActionPanel from './components/user-action-panel';
 import { VideoAuthorCard } from './components/video-author-card';
 import { VideoDanmuList } from './components/video-danmu-list';
 import { VideoPlaylistPanel } from './components/video-playlist-panel';
@@ -382,8 +383,7 @@ export default function VideoDetailCard() {
                         <div className="relative aspect-video w-full bg-black">
                             <div ref={playerRef} className="absolute inset-0 h-full w-full" />
                         </div>
-
-                        <div className="flex items-center gap-4 border-t border-[#eef2f7] bg-white px-5 py-3 shadow-sm">
+                        <div className="flex items-center gap-4 px-5 py-3 ">
                             <div className="flex items-center whitespace-nowrap text-sm text-gray-500">
                                 <span>{danmuList.length} 人正在看</span>
                                 <span className="mx-2">·</span>
@@ -448,6 +448,7 @@ export default function VideoDetailCard() {
                                 </Button>
                             </div>
                         </div>
+                        <UserActionPanel />
                     </div>
                 </div>
 
@@ -476,6 +477,7 @@ export default function VideoDetailCard() {
                         onToggleAutoPlayNext={setAutoPlayNext}
                     />
                 </aside>
+                <div></div>
             </section>
         </main>
     );
