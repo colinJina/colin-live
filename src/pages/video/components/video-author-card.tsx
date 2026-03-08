@@ -24,66 +24,78 @@ export function VideoAuthorCard({ authorProfile, onVisitHome }: VideoAuthorCardP
         if (authorProfile.haveFocus) {
             cancelFocus(authorProfile.userId, {
                 onSuccess: () => {
-                    message.success('已取消关注');
+                    message.success('\u5df2\u53d6\u6d88\u5173\u6ce8');
                 },
-                onError: () => message.error('操作失败，请重试'),
+                onError: () => message.error('\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5'),
             });
         } else {
             focus(authorProfile.userId, {
                 onSuccess: () => {
-                    message.success('关注成功');
+                    message.success('\u5173\u6ce8\u6210\u529f');
                 },
-                onError: () => message.error('关注失败'),
+                onError: () => message.error('\u5173\u6ce8\u5931\u8d25'),
             });
         }
     };
 
     const isPending = isFocusing || isCanceling;
     return (
-        <section className="rounded-[16px] border border-[#e8edf5] bg-white p-4 shadow-sm">
-            <div className="flex gap-4">
+        <section className="relative overflow-hidden rounded-[28px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,249,252,0.98)_0%,rgba(255,239,246,0.98)_100%)] p-4 shadow-[0_18px_40px_rgba(251,114,153,0.12)] ring-1 ring-[#ffd8e4]/70">
+            <div className="pointer-events-none absolute inset-0">
+                <div className="absolute right-[10%] top-4 h-16 w-16 rounded-full bg-[#ffb3ca]/20 blur-2xl" />
+                <div className="absolute bottom-[-18px] left-[16%] h-12 w-32 rounded-full bg-white/45 blur-2xl" />
+            </div>
+
+            <div className="relative mb-4 flex items-center justify-between">
+                <div className="inline-flex rounded-full border border-[#ffd4e2] bg-white/72 px-3 py-1 text-[11px] font-semibold tracking-[0.16em] text-[#dd6a90]">
+                    AUTHOR
+                </div>
+                <div className="text-xs font-medium text-[#b17189]">UP PROFILE</div>
+            </div>
+
+            <div className="relative flex gap-4">
                 <img
                     src={getAvatarSrc(authorProfile.avatar) || defaultAvatar}
                     alt={authorProfile.nickName}
-                    className="h-16 w-16 shrink-0 rounded-full border border-[#eef2f7] bg-white object-cover"
+                    className="h-16 w-16 shrink-0 rounded-full border border-[#ffe1ea] bg-white object-cover shadow-[0_10px_22px_rgba(251,114,153,0.1)]"
                 />
                 <div className="min-w-0 flex-1">
-                    <div className="truncate text-[17px] font-medium text-[#18191c]">
+                    <div className="truncate text-[17px] font-semibold text-[#6f3f55]">
                         {authorProfile.nickName}
                     </div>
-                    <div className="mt-1 text-xs text-[#9499a0]">
-                        UP主 ID: {authorProfile.userId || '--'}
+                    <div className="mt-1 text-xs text-[#b07b90]">
+                        {'UP\u4e3b ID: '} {authorProfile.userId || '--'}
                     </div>
-                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#61666d]">
+                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#8d5c70]">
                         {authorProfile.personIntroduction}
                     </p>
-                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#61666d]">
-                        <span className="rounded-full bg-[#f6f7fb] px-3 py-1">
-                            关注 {renderCount(authorProfile.focusCount)}
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-[#8d5c70]">
+                        <span className="rounded-full border border-[#ffe1ea] bg-white/72 px-3 py-1.5 shadow-[0_8px_18px_rgba(251,114,153,0.06)]">
+                            {'\u5173\u6ce8 '} {renderCount(authorProfile.focusCount)}
                         </span>
-                        <span className="rounded-full bg-[#f6f7fb] px-3 py-1">
-                            粉丝 {renderCount(authorProfile.fansCount)}
+                        <span className="rounded-full border border-[#ffe1ea] bg-white/72 px-3 py-1.5 shadow-[0_8px_18px_rgba(251,114,153,0.06)]">
+                            {'\u7c89\u4e1d '} {renderCount(authorProfile.fansCount)}
                         </span>
                     </div>
                     <div className="mt-4 flex gap-2">
                         <Button
                             type="primary"
-                            className="rounded-full border-none bg-[#fb7299] px-4 hover:!bg-[#fc8bab]"
+                            className="h-9! rounded-full! border-none! bg-[linear-gradient(180deg,#ff8fb3_0%,#fb7299_100%)] px-4! font-medium! text-white! shadow-[0_10px_24px_rgba(251,114,153,0.18)] hover:!bg-[linear-gradient(180deg,#ff9abd_0%,#fc7ea3_100%)]"
                             onClick={onVisitHome}
                             disabled={!authorProfile.userId}
                         >
-                            访问主页
+                            {'\u8bbf\u95ee\u4e3b\u9875'}
                         </Button>
                         <Button
                             loading={isPending}
                             onClick={handleToggleFocus}
-                            className={`rounded-full px-6 ${
+                            className={`h-9! rounded-full! px-5! font-medium! shadow-none! ${
                                 authorProfile.haveFocus
-                                    ? 'bg-[#f1f2f3] text-[#9499a0] border-none hover:!bg-[#e3e5e7]'
-                                    : 'bg-white text-[#fb7299] border-[#fb7299] hover:!text-[#fc8bab] hover:!border-[#fc8bab]'
+                                    ? 'border-none! bg-white/80! text-[#b07b90]! hover:!bg-white!'
+                                    : 'border-[#ffbfd3]! bg-[linear-gradient(180deg,#ffffff_0%,#fff2f7_100%)] text-[#fb7299]! hover:!border-[#ffb0c8] hover:!text-[#e05d8d]'
                             }`}
                         >
-                            {authorProfile.haveFocus ? '已关注' : '+ 关注'}
+                            {authorProfile.haveFocus ? '\u5df2\u5173\u6ce8' : '+ \u5173\u6ce8'}
                         </Button>
                     </div>
                 </div>

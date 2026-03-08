@@ -32,17 +32,17 @@ type DanmukuPlugin = {
 type ArtPlayerWithHls = Artplayer & { hls?: Hls };
 
 const DANMU_MODE_OPTIONS: Array<{ label: string; value: DanmuSendMode }> = [
-    { label: '滚动', value: 1 },
-    { label: '底部', value: 4 },
-    { label: '顶部', value: 5 },
+    { label: '\u6eda\u52a8', value: 1 },
+    { label: '\u5e95\u90e8', value: 4 },
+    { label: '\u9876\u90e8', value: 5 },
 ];
 
 const DANMU_COLOR_OPTIONS = [
-    { label: '白色', value: '#ffffff' },
-    { label: '蓝色', value: '#7dd3fc' },
-    { label: '绿色', value: '#86efac' },
-    { label: '粉色', value: '#f9a8d4' },
-    { label: '橙色', value: '#fdba74' },
+    { label: '\u767d\u8272', value: '#ffffff' },
+    { label: '\u84dd\u8272', value: '#7dd3fc' },
+    { label: '\u7eff\u8272', value: '#86efac' },
+    { label: '\u7c89\u8272', value: '#f9a8d4' },
+    { label: '\u6a59\u8272', value: '#fdba74' },
 ];
 
 const getValidP = (value: string | null, total: number) => {
@@ -97,9 +97,11 @@ export default function VideoDetailCard() {
     const authorProfile = useMemo(() => {
         const fallback = {
             userId: authorUserId || '',
-            nickName: baseVideoInfo?.nickName || 'UP主',
+            nickName: baseVideoInfo?.nickName || 'UP\u4e3b',
             avatar: baseVideoInfo?.avatar || '',
-            introduction: baseVideoInfo?.introduction || '这个作者还没有填写简介。',
+            introduction:
+                baseVideoInfo?.introduction ||
+                '\u8fd9\u4e2a\u4f5c\u8005\u8fd8\u6ca1\u6709\u586b\u5199\u7b80\u4ecb\u3002',
             fansCount: 0,
             focusCount: 0,
             haveFocus: false,
@@ -177,7 +179,7 @@ export default function VideoDetailCard() {
         mutationFn: async (params: PostDanmuParams) => {
             const response = await postDanmu(params);
             if (!response) {
-                throw new Error('发送失败');
+                throw new Error('\u53d1\u9001\u5931\u8d25');
             }
             return params;
         },
@@ -189,7 +191,7 @@ export default function VideoDetailCard() {
                 mode: params.mode,
                 time: params.time,
                 createTime: new Date().toISOString(),
-                nickName: '我',
+                nickName: '\u6211',
             };
 
             queryClient.setQueryData(
@@ -223,10 +225,10 @@ export default function VideoDetailCard() {
             }
 
             setDanmuText('');
-            message.success('弹幕已发送');
+            message.success('\u5f39\u5e55\u5df2\u53d1\u9001');
         },
         onError: () => {
-            message.error('发送弹幕失败');
+            message.error('\u53d1\u9001\u5f39\u5e55\u5931\u8d25');
         },
     });
 
@@ -256,7 +258,8 @@ export default function VideoDetailCard() {
                     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                         video.src = url;
                     } else {
-                        art.notice.show = '浏览器不支持该播放器';
+                        art.notice.show =
+                            '\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u8be5\u64ad\u653e\u5668';
                     }
                 },
             },
@@ -298,8 +301,8 @@ export default function VideoDetailCard() {
                 {
                     name: 'wide-screen',
                     position: 'right',
-                    html: '<span class="text-sm">宽屏模式</span>',
-                    tooltip: '宽屏模式',
+                    html: '<span class="text-sm">\u5bbd\u5c4f\u6a21\u5f0f</span>',
+                    tooltip: '\u5bbd\u5c4f\u6a21\u5f0f',
                     style: { color: '#fff' },
                 },
             ],
@@ -341,12 +344,12 @@ export default function VideoDetailCard() {
         }
         const text = danmuText.trim();
         if (!text) {
-            message.warning('请输入弹幕内容');
+            message.warning('\u8bf7\u8f93\u5165\u5f39\u5e55\u5185\u5bb9');
             return;
         }
 
         if (text.length > 200) {
-            message.warning('弹幕不能超过 200 个字符');
+            message.warning('\u5f39\u5e55\u4e0d\u80fd\u8d85\u8fc7 200 \u4e2a\u5b57\u7b26');
             return;
         }
 
@@ -379,73 +382,102 @@ export default function VideoDetailCard() {
                         currentVideo={currentVideo}
                         videoId={videoId}
                     />
-                    <div className="overflow-hidden rounded-[16px] border border-[#e9edf5] bg-white shadow-sm">
-                        <div className="relative aspect-video w-full bg-black">
+                    <div className="relative overflow-hidden rounded-[30px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,249,252,0.98)_0%,rgba(255,238,245,0.98)_55%,rgba(255,230,240,0.98)_100%)] shadow-[0_22px_52px_rgba(251,114,153,0.14)] ring-1 ring-[#ffdbe6]/70">
+                        <div className="pointer-events-none absolute inset-0">
+                            <div className="absolute left-[-32px] top-[-36px] h-28 w-28 rounded-full bg-white/55 blur-2xl" />
+                            <div className="absolute right-[8%] top-4 h-20 w-20 rounded-full bg-[#ffb3ca]/25 blur-2xl" />
+                            <div className="absolute bottom-[-22px] left-[22%] h-16 w-44 rounded-full bg-white/40 blur-2xl" />
+                        </div>
+
+                        <div className="relative aspect-video w-full overflow-hidden rounded-t-[30px] bg-[#2f0f1b]">
                             <div ref={playerRef} className="absolute inset-0 h-full w-full" />
                         </div>
-                        <div className="flex items-center gap-4 px-5 py-3 ">
-                            <div className="flex items-center whitespace-nowrap text-sm text-gray-500">
-                                <span>{danmuList.length} 人正在看</span>
-                                <span className="mx-2">·</span>
-                                <span>已装填 {danmuList.length} 条弹幕</span>
+
+                        <div className="relative border-t border-white/65 bg-white/52 px-5 py-4 backdrop-blur-md">
+                            <div className="mb-3 flex items-center justify-between">
+                                <div className="inline-flex rounded-full border border-[#ffd4e2] bg-white/72 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-[#dd6a90]">
+                                    DANMU PANEL
+                                </div>
+                                <div className="rounded-full border border-[#ffe0ea] bg-white/68 px-3 py-1 text-[11px] font-medium text-[#b17189]">
+                                    Flat Pink Player
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-2 border-l border-[#eef2f7] pl-4">
-                                <Switch checked={showDanmu} onChange={setShowDanmu} size="small" />
-                                <span className="text-xs text-gray-400">
-                                    {showDanmu ? '弹幕开' : '弹幕关'}
-                                </span>
-                            </div>
+                            <div className="flex flex-wrap items-center gap-4">
+                                <div className="flex items-center whitespace-nowrap rounded-full border border-[#ffe1ea] bg-white/70 px-4 py-2 text-sm text-[#9b667c] shadow-[0_10px_24px_rgba(251,114,153,0.08)]">
+                                    <span>
+                                        {danmuList.length} {'\u4eba\u6b63\u5728\u770b'}
+                                    </span>
+                                    <span className="mx-2 text-[#e4a1b8]">{'\u2022'}</span>
+                                    <span>
+                                        {'\u5df2\u88c5\u586b'} {danmuList.length}{' '}
+                                        {'\u6761\u5f39\u5e55'}
+                                    </span>
+                                </div>
 
-                            <div className="flex min-w-0 flex-1 items-center gap-2 rounded-full bg-[#f4f4f4] px-4 py-1.5 focus-within:ring-1 focus-within:ring-[#fb7299]">
-                                <Select
-                                    variant="borderless"
-                                    value={danmuMode}
-                                    onChange={(value) => setDanmuMode(value as DanmuSendMode)}
-                                    options={DANMU_MODE_OPTIONS}
-                                    className="-ml-2 w-[70px] text-xs"
-                                    popupMatchSelectWidth={false}
-                                />
-                                <Select
-                                    variant="borderless"
-                                    value={danmuColor}
-                                    onChange={setDanmuColor}
-                                    options={DANMU_COLOR_OPTIONS}
-                                    className="w-[80px] text-xs"
-                                    popupMatchSelectWidth={false}
-                                    optionRender={(option) => {
-                                        const color = String(option.data.value);
-                                        return (
-                                            <div className="flex items-center gap-2">
-                                                <span
-                                                    className="inline-block h-3 w-3 rounded-full ring-1 ring-black/10"
-                                                    style={{ backgroundColor: color }}
-                                                />
-                                                <span className="text-xs">
-                                                    {String(option.data.label)}
-                                                </span>
-                                            </div>
-                                        );
-                                    }}
-                                />
-                                <Input
-                                    variant="borderless"
-                                    value={danmuText}
-                                    maxLength={200}
-                                    onChange={(event) => setDanmuText(event.target.value)}
-                                    onPressEnter={handleSendDanmu}
-                                    placeholder="发个友善的弹幕见证当下"
-                                    className="min-w-0 flex-1 bg-transparent text-sm !shadow-none"
-                                />
-                                <Button
-                                    type="primary"
-                                    loading={postDanmuMutation.isPending}
-                                    onClick={handleSendDanmu}
-                                    size="small"
-                                    className="rounded-full border-none bg-[#fb7299] px-4 hover:!bg-[#fc8bab]"
-                                >
-                                    发送
-                                </Button>
+                                <div className="flex items-center gap-2 rounded-full border border-[#ffe1ea] bg-white/70 px-4 py-2 text-xs text-[#9b667c] shadow-[0_10px_24px_rgba(251,114,153,0.08)]">
+                                    <Switch
+                                        checked={showDanmu}
+                                        onChange={setShowDanmu}
+                                        size="small"
+                                    />
+                                    <span>
+                                        {showDanmu ? '\u5f39\u5e55\u5f00' : '\u5f39\u5e55\u5173'}
+                                    </span>
+                                </div>
+
+                                <div className="flex min-w-0 flex-1 items-center gap-2 rounded-[22px] border border-[#ffdce7] bg-[linear-gradient(180deg,rgba(255,255,255,0.86)_0%,rgba(255,243,248,0.88)_100%)] px-3 py-2 shadow-[0_12px_26px_rgba(251,114,153,0.08)] focus-within:border-[#ffb6cc] focus-within:ring-2 focus-within:ring-[#fb7299]/10">
+                                    <Select
+                                        variant="borderless"
+                                        value={danmuMode}
+                                        onChange={(value) => setDanmuMode(value as DanmuSendMode)}
+                                        options={DANMU_MODE_OPTIONS}
+                                        className="-ml-1 w-[76px] text-xs"
+                                        popupMatchSelectWidth={false}
+                                    />
+                                    <Select
+                                        variant="borderless"
+                                        value={danmuColor}
+                                        onChange={setDanmuColor}
+                                        options={DANMU_COLOR_OPTIONS}
+                                        className="w-[84px] text-xs"
+                                        popupMatchSelectWidth={false}
+                                        optionRender={(option) => {
+                                            const color = String(option.data.value);
+                                            return (
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className="inline-block h-3 w-3 rounded-full ring-1 ring-black/10"
+                                                        style={{ backgroundColor: color }}
+                                                    />
+                                                    <span className="text-xs">
+                                                        {String(option.data.label)}
+                                                    </span>
+                                                </div>
+                                            );
+                                        }}
+                                    />
+                                    <Input
+                                        variant="borderless"
+                                        value={danmuText}
+                                        maxLength={200}
+                                        onChange={(event) => setDanmuText(event.target.value)}
+                                        onPressEnter={handleSendDanmu}
+                                        placeholder={
+                                            '\u53d1\u4e2a\u53cb\u5584\u7684\u5f39\u5e55\u8bc1\u660e\u5230\u6b64\u4e00\u6e38'
+                                        }
+                                        className="min-w-0 flex-1 bg-transparent text-sm !text-[#6f3f55] !shadow-none placeholder:!text-[#c290a5]"
+                                    />
+                                    <Button
+                                        type="primary"
+                                        loading={postDanmuMutation.isPending}
+                                        onClick={handleSendDanmu}
+                                        size="small"
+                                        className="h-9! rounded-full! border-none! bg-[linear-gradient(180deg,#ff8fb3_0%,#fb7299_100%)] px-5! font-medium! text-white! shadow-[0_10px_24px_rgba(251,114,153,0.2)] hover:!bg-[linear-gradient(180deg,#ff9abd_0%,#fc7ea3_100%)]"
+                                    >
+                                        {'\u53d1\u9001'}
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                         <UserActionPanel />
