@@ -22,6 +22,7 @@ import { VideoAuthorCard } from './components/video-author-card';
 import { VideoDanmuList } from './components/video-danmu-list';
 import { VideoPlaylistPanel } from './components/video-playlist-panel';
 import { VideoSummaryCard } from './components/video-summary-card';
+import VideoCommentSection from './components/video-comment-section';
 
 type DanmuSendMode = 1 | 4 | 5;
 type DanmukuPlugin = {
@@ -515,7 +516,7 @@ export default function VideoDetailCard() {
                         onToggleAutoPlayNext={setAutoPlayNext}
                     />
                 </aside>
-                <div></div>
+                <VideoCommentSection videoId={videoId} />
             </section>
         </main>
     );

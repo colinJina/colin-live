@@ -220,3 +220,100 @@ export const doAction = (params: DoActionParams): Promise<ResponseVO<null> | nul
         data: params,
     }) as Promise<ResponseVO<null> | null>;
 };
+
+// --- API 层返回的数据结构定义 ---
+export interface ApiUserAction {
+    actionId: number;
+    videoId: string;
+    commentId: number;
+    actionType: number;
+}
+
+export interface ApiComment {
+    commentId: number;
+    pCommentId: number;
+    videoId: string;
+    content: string;
+    avatar: string;
+    nickName: string;
+    userId: string;
+    likeCount: number;
+    hateCount: number;
+    imgPath: string | null;
+    postTime: string;
+    replyAvatar: string | null;
+    replyNickName: string | null;
+    replyUserId: string | null;
+    children: ApiComment[] | null;
+}
+
+export interface ApiCommentResponseData {
+    commentData: {
+        totalCount: number;
+        pageSize: number;
+        pageNo: number;
+        pageTotal: number;
+        list: ApiComment[];
+    };
+    userActionList: ApiUserAction[];
+}
+
+export type CommentUser = {
+    userId: string;
+    nickName: string;
+    avatar: string;
+};
+
+export type CommentData = {
+    commentId: string;
+    user: CommentUser;
+    content: string;
+    time: string;
+    likes: number;
+    isLiked?: boolean;
+    images?: string[];
+    replyTo?: CommentUser;
+    replies?: CommentData[];
+};
+
+export const loadCommentApi = (
+    data: LoadCommentParams,
+): Promise<ResponseVO<ApiCommentResponseData> | null> => {
+    return request<ApiCommentResponseData>({
+        url: '/comment/loadComment',
+        method: 'POST',
+        data,
+    });
+};
+
+export interface PostCommentParams {
+    videoId: string;
+    content: string;
+    replyCommentId?: number;
+    imgPath?: string;
+}
+export interface LoadCommentParams {
+    videoId: string;
+    orderType: number;
+    pageNo?: number;
+}
+
+export const postCommentApi = (data: PostCommentParams): Promise<ResponseVO<ApiComment> | null> => {
+    return request<ApiComment>({
+        url: '/comment/postComment',
+        method: 'POST',
+        data,
+    });
+};
+
+export const uploadImageApi = (file: File): Promise<ResponseVO<string> | null> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('createThumbnail', 'true');
+
+    return request<string>({
+        url: '/file/uploadImage',
+        method: 'POST',
+        data: formData,
+    }) as Promise<ResponseVO<string> | null>;
+};
