@@ -487,12 +487,11 @@ export default function VideoCommentSection({ videoId }: VideoCommentSectionProp
         setOrderType,
     } = useComments(videoId ?? '');
     const { mutateAsync: postComment, isPending: isPostingTop } = usePostComment();
-
+    const { openLoginModal } = useLoginModal();
+    const userInfo = useUserStore((state) => state.userInfo);
     const loadMoreRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log(comments);
-
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) fetchNextPage();
@@ -508,6 +507,10 @@ export default function VideoCommentSection({ videoId }: VideoCommentSectionProp
 
     const handleTopLevelSubmit = async (content: string, clearFn: () => void, imgPath?: string) => {
         if (!videoId) return;
+        if (!userInfo) {
+            openLoginModal();
+            return;
+        }
         try {
             await postComment({
                 videoId,

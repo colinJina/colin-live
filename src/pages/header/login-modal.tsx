@@ -3,8 +3,9 @@ import {
     MailOutlined,
     SafetyCertificateOutlined,
     UserOutlined,
+    SyncOutlined,
 } from '@ant-design/icons';
-import { Button, ConfigProvider, Form, Input, Modal, Tabs, message } from 'antd';
+import { Button, ConfigProvider, Form, Input, Modal, Tabs, message, Tooltip } from 'antd';
 import { useState } from 'react';
 
 import { useCheckCode, useLoginAccount, useRegisterAccount } from '../../hooks/queries/useAuth';
@@ -33,14 +34,18 @@ const registerPasswordRegex = /^(?=.*\d)(?=.*[a-zA-Z])[\da-zA-Z~!@#$%^&*_]{8,18}
 
 const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
     const [activeTab, setActiveTab] = useState('login');
-    const { data: checkCodeData, refetch: refreshCheckCode } = useCheckCode();
+    const {
+        data: checkCodeData,
+        refetch: refreshCheckCode,
+        isFetching: isRefreshingCode,
+    } = useCheckCode();
     const loginMutation = useLoginAccount();
     const registerMutation = useRegisterAccount();
     const setUserInfo = useUserStore((state) => state.setUserInfo);
 
     const ensureCheckCodeKey = () => {
         if (!checkCodeData?.checkCodeKey) {
-            message.warning('验证码已失效，请刷新后重试');
+            message.warning('验证码已失效，请刷新重试');
             refreshCheckCode();
             return null;
         }
@@ -49,9 +54,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
 
     const handleLoginFinish = (values: LoginFormValues) => {
         const checkCodeKey = ensureCheckCodeKey();
-        if (!checkCodeKey) {
-            return;
-        }
+        if (!checkCodeKey) return;
 
         loginMutation.mutate(
             {
@@ -64,14 +67,14 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                 onSuccess: (data) => {
                     if (data) {
                         setUserInfo(data);
-                        message.success('登录成功');
+                        message.success('欢迎回来！');
                         onCancel();
                         return;
                     }
                     refreshCheckCode();
                 },
                 onError: (error: any) => {
-                    message.error(error.msg || '登录失败');
+                    message.error(error.msg || '登录失败，请检查账号或验证码');
                     refreshCheckCode();
                 },
             },
@@ -80,9 +83,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
 
     const handleRegisterFinish = (values: RegisterFormValues) => {
         const checkCodeKey = ensureCheckCodeKey();
-        if (!checkCodeKey) {
-            return;
-        }
+        if (!checkCodeKey) return;
 
         registerMutation.mutate(
             {
@@ -94,7 +95,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
             },
             {
                 onSuccess: () => {
-                    message.success('注册成功，请登录');
+                    message.success('注册成功，快去登录吧');
                     setActiveTab('login');
                     refreshCheckCode();
                 },
@@ -111,13 +112,16 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
             theme={{
                 token: {
                     colorPrimary: '#fb7299',
-                    borderRadius: 4,
+                    borderRadius: 8,
+                    colorLink: '#00aeec',
                 },
                 components: {
                     Tabs: {
-                        itemSelectedColor: '#fb7299',
-                        inkBarColor: '#fb7299',
-                        itemHoverColor: '#ff85ad',
+                        titleFontSize: 16,
+                        horizontalItemGutter: 32,
+                    },
+                    Input: {
+                        controlHeight: 42,
                     },
                 },
             }}
@@ -126,20 +130,22 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                 open={isOpen}
                 onCancel={onCancel}
                 footer={null}
-                width={480}
+                width={440}
                 centered
                 destroyOnClose
+                bodyStyle={{ padding: 0 }}
+                className="login-modal-custom"
             >
-                <div className="px-10 py-8 lg:px-10 lg:py-8">
+                <div className="px-8 py-10">
                     <Tabs
                         activeKey={activeTab}
                         onChange={setActiveTab}
                         centered
-                        className="mb-6"
+                        className="mb-8 custom-tabs"
                         items={[
                             {
                                 key: 'login',
-                                label: <span className="text-base px-4">密码登录</span>,
+                                label: <span className="font-medium">密码登录</span>,
                                 children: (
                                     <Form<LoginFormValues>
                                         name="login"
@@ -149,67 +155,78 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                     >
                                         <Form.Item
                                             name="email"
-                                            className="mb-4"
                                             rules={[
                                                 { required: true, message: '请输入邮箱' },
                                                 { type: 'email', message: '邮箱格式不正确' },
-                                                { max: 150, message: '邮箱长度不能超过150' },
                                             ]}
                                         >
                                             <Input
-                                                prefix={<MailOutlined className="text-gray-400" />}
+                                                prefix={
+                                                    <MailOutlined className="text-gray-300 mr-1" />
+                                                }
                                                 placeholder="邮箱"
+                                                allowClear
                                             />
                                         </Form.Item>
                                         <Form.Item
                                             name="password"
-                                            className="mb-4"
                                             rules={[{ required: true, message: '请输入密码' }]}
                                         >
                                             <Input.Password
-                                                prefix={<LockOutlined className="text-gray-400" />}
+                                                prefix={
+                                                    <LockOutlined className="text-gray-300 mr-1" />
+                                                }
                                                 placeholder="密码"
                                             />
                                         </Form.Item>
-                                        <div className="flex justify-center gap-4">
+
+                                        <div className="flex items-start gap-3">
                                             <Form.Item
                                                 name="checkCode"
-                                                className="mb-0 flex-1"
+                                                className="flex-1"
                                                 rules={[
                                                     { required: true, message: '请输入验证码' },
                                                 ]}
                                             >
                                                 <Input
                                                     prefix={
-                                                        <SafetyCertificateOutlined className="text-gray-400" />
+                                                        <SafetyCertificateOutlined className="text-gray-300 mr-1" />
                                                     }
                                                     placeholder="验证码"
                                                 />
                                             </Form.Item>
-                                            <div
-                                                className="cursor-pointer h-[32px] w-[100px] bg-gray-100 flex items-center justify-center overflow-hidden rounded"
-                                                onClick={() => refreshCheckCode()}
-                                            >
-                                                {checkCodeData?.checkCode ? (
-                                                    <img
-                                                        src={checkCodeData.checkCode}
-                                                        alt="验证码"
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <span className="text-xs text-gray-400">
-                                                        点击获取
-                                                    </span>
-                                                )}
-                                            </div>
+                                            <Tooltip title="点击刷新">
+                                                <div
+                                                    className="cursor-pointer h-[42px] w-[110px] bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden rounded transition-all active:scale-95"
+                                                    onClick={() => refreshCheckCode()}
+                                                >
+                                                    {isRefreshingCode ? (
+                                                        <SyncOutlined
+                                                            spin
+                                                            className="text-pink-400"
+                                                        />
+                                                    ) : checkCodeData?.checkCode ? (
+                                                        <img
+                                                            src={checkCodeData.checkCode}
+                                                            alt="验证码"
+                                                            className="h-full w-full object-contain"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-xs text-gray-400">
+                                                            点击获取
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </Tooltip>
                                         </div>
-                                        <Form.Item className="mb-0">
+
+                                        <Form.Item className="mt-2 mb-0">
                                             <Button
                                                 type="primary"
                                                 htmlType="submit"
                                                 block
                                                 loading={loginMutation.isPending}
-                                                className="h-10 text-base mt-2 bg-bili-pink border-bili-pink hover:!bg-bili-pink-hover hover:!border-bili-pink-hover"
+                                                className="h-11 text-base font-semibold shadow-md shadow-pink-100"
                                             >
                                                 登录
                                             </Button>
@@ -219,7 +236,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                             },
                             {
                                 key: 'register',
-                                label: <span className="text-base px-4">注册</span>,
+                                label: <span className="font-medium">快速注册</span>,
                                 children: (
                                     <Form<RegisterFormValues>
                                         name="register"
@@ -229,71 +246,77 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                     >
                                         <Form.Item
                                             name="email"
-                                            className="mb-4"
                                             rules={[
                                                 { required: true, message: '请输入邮箱' },
-                                                { type: 'email', message: '邮箱格式不正确' },
-                                                { max: 150, message: '邮箱长度不能超过150' },
+                                                { type: 'email', message: '格式错误' },
+                                                { max: 150, message: '长度超限' },
                                             ]}
                                         >
                                             <Input
-                                                prefix={<MailOutlined className="text-gray-400" />}
+                                                prefix={
+                                                    <MailOutlined className="text-gray-300 mr-1" />
+                                                }
                                                 placeholder="邮箱"
                                             />
                                         </Form.Item>
                                         <Form.Item
                                             name="nickName"
-                                            className="mb-4"
                                             rules={[
                                                 { required: true, message: '请输入昵称' },
-                                                { max: 20, message: '昵称长度不能超过20' },
+                                                { max: 20, message: '昵称过长' },
                                             ]}
                                         >
                                             <Input
-                                                prefix={<UserOutlined className="text-gray-400" />}
+                                                prefix={
+                                                    <UserOutlined className="text-gray-300 mr-1" />
+                                                }
                                                 placeholder="昵称"
                                             />
                                         </Form.Item>
                                         <Form.Item
                                             name="registerPassword"
-                                            className="mb-4"
                                             rules={[
-                                                { required: true, message: '请输入注册密码' },
+                                                { required: true, message: '请输入密码' },
                                                 {
                                                     pattern: registerPasswordRegex,
-                                                    message: '密码需8-18位，包含字母、数字',
+                                                    message: '8-18位，包含字母和数字',
                                                 },
                                             ]}
                                         >
                                             <Input.Password
-                                                prefix={<LockOutlined className="text-gray-400" />}
-                                                placeholder="注册密码"
+                                                prefix={
+                                                    <LockOutlined className="text-gray-300 mr-1" />
+                                                }
+                                                placeholder="设置密码"
                                             />
                                         </Form.Item>
-                                        <div className="flex justify-center gap-4">
+
+                                        <div className="flex items-start gap-3">
                                             <Form.Item
                                                 name="checkCode"
-                                                className="mb-0 flex-1"
+                                                className="flex-1"
                                                 rules={[
                                                     { required: true, message: '请输入验证码' },
                                                 ]}
                                             >
                                                 <Input
                                                     prefix={
-                                                        <SafetyCertificateOutlined className="text-gray-400" />
+                                                        <SafetyCertificateOutlined className="text-gray-300 mr-1" />
                                                     }
                                                     placeholder="验证码"
                                                 />
                                             </Form.Item>
                                             <div
-                                                className="cursor-pointer h-[32px] w-[100px] bg-gray-100 flex items-center justify-center overflow-hidden rounded"
+                                                className="cursor-pointer h-[42px] w-[110px] bg-gray-50 border border-gray-200 flex items-center justify-center overflow-hidden rounded transition-all"
                                                 onClick={() => refreshCheckCode()}
                                             >
-                                                {checkCodeData?.checkCode ? (
+                                                {isRefreshingCode ? (
+                                                    <SyncOutlined spin className="text-pink-400" />
+                                                ) : checkCodeData?.checkCode ? (
                                                     <img
                                                         src={checkCodeData.checkCode}
                                                         alt="验证码"
-                                                        className="h-full w-full object-cover"
+                                                        className="h-full w-full object-contain"
                                                     />
                                                 ) : (
                                                     <span className="text-xs text-gray-400">
@@ -302,15 +325,16 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                                                 )}
                                             </div>
                                         </div>
-                                        <Form.Item className="mb-0">
+
+                                        <Form.Item className="mt-2 mb-0">
                                             <Button
                                                 type="primary"
                                                 htmlType="submit"
                                                 block
                                                 loading={registerMutation.isPending}
-                                                className="h-10 text-base mt-2 bg-bili-pink border-bili-pink hover:!bg-bili-pink-hover hover:!border-bili-pink-hover"
+                                                className="h-11 text-base font-semibold shadow-md shadow-pink-100"
                                             >
-                                                注册
+                                                立即注册
                                             </Button>
                                         </Form.Item>
                                     </Form>
@@ -318,20 +342,16 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                             },
                         ]}
                     />
-                    <div className="mt-6 text-center text-xs text-gray-400">
-                        <p>
-                            登录即代表您同意
-                            <a
-                                href="#"
-                                className="text-bili-blue hover:text-bili-pink transition-colors"
-                            >
+
+                    <div className="mt-8 text-center">
+                        <p className="text-[12px] text-gray-400 leading-relaxed">
+                            未注册邮箱登录时将自动创建账号，且代表您同意
+                            <br />
+                            <a href="#" className="text-blue-400 hover:underline mx-1">
                                 服务协议
                             </a>
                             和
-                            <a
-                                href="#"
-                                className="text-bili-blue hover:text-bili-pink transition-colors"
-                            >
+                            <a href="#" className="text-blue-400 hover:underline mx-1">
                                 隐私政策
                             </a>
                         </p>
