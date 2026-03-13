@@ -480,7 +480,13 @@ export default function VideoDetailCard() {
                                 </div>
                             </div>
                         </div>
-                        <UserActionPanel />
+                        {videoInfoData && (
+                            <UserActionPanel
+                                videoId={videoId ?? ''}
+                                videoInfo={videoInfoData?.videoInfo}
+                                userActionList={videoInfoData?.userActionList}
+                            />
+                        )}
                     </div>
                 </div>
 

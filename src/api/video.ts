@@ -205,3 +205,18 @@ export const postDanmu = (params: PostDanmuParams): Promise<ResponseVO<null> | n
         data: formData,
     }) as Promise<ResponseVO<null> | null>;
 };
+
+export interface DoActionParams {
+    videoId: string;
+    actionType: number;
+    actionCount?: number;
+    commentId?: number;
+}
+
+export const doAction = (params: DoActionParams): Promise<ResponseVO<null> | null> => {
+    return request<null>({
+        url: '/userAction/doAction',
+        method: 'POST',
+        data: params,
+    }) as Promise<ResponseVO<null> | null>;
+};

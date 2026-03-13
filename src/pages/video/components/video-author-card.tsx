@@ -1,12 +1,12 @@
 import { Button, message } from 'antd';
 
 import { getAvatarSrc } from '../../../utils';
-
+import { useLoginModal } from '../../../provider/login-modal-provider';
 import defaultAvatar from '@/assets/icon/user.svg';
 import type { UserInfoVO } from '../../../api/uhome';
+import { useUserStore } from '../../../stores/useUserStore';
 import { useCancelFocusUser, useFocusUser } from '../../../hooks/queries/useUhome';
 import { useEffect } from 'react';
-
 type VideoAuthorCardProps = {
     authorProfile: UserInfoVO;
     onVisitHome: () => void;
@@ -19,8 +19,14 @@ export function VideoAuthorCard({ authorProfile, onVisitHome }: VideoAuthorCardP
     });
     const { mutate: focus, isPending: isFocusing } = useFocusUser();
     const { mutate: cancelFocus, isPending: isCanceling } = useCancelFocusUser();
+    const userInfo = useUserStore((state) => state.userInfo);
+    const { openLoginModal } = useLoginModal();
     const handleToggleFocus = () => {
         if (!authorProfile.userId) return;
+        if (!userInfo) {
+            openLoginModal();
+            return;
+        }
         if (authorProfile.haveFocus) {
             cancelFocus(authorProfile.userId, {
                 onSuccess: () => {
