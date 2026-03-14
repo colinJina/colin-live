@@ -5,7 +5,6 @@ import { RouterProvider } from 'react-router-dom';
 
 import './index.css';
 import './App.css';
-import { DrawerProvider } from './provider/drawer-provider.tsx';
 import { LoginModalProvider } from './provider/login-modal-provider.tsx';
 import router from './router/router.tsx';
 
@@ -57,11 +56,9 @@ createRoot(document.getElementById('root')!).render(
             }}
         >
             <AntApp>
-                <DrawerProvider>
-                    <LoginModalProvider>
-                        <RouterProvider router={router} />
-                    </LoginModalProvider>
-                </DrawerProvider>
+                <LoginModalProvider>
+                    <RouterProvider router={router} />
+                </LoginModalProvider>
             </AntApp>
         </ConfigProvider>
     </QueryClientProvider>,
