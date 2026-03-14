@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { cancelFocusUser, focusUser, getUserInfo } from '../../api/uhome';
 import { doAction } from '../../api/video';
-import { message } from 'antd';
+import { toast } from '../../pages/header/message';
 
 export const useGetAuthorInfo = (userId: string) => {
     return useQuery({
@@ -60,13 +60,13 @@ export const useVideoActionMutation = (videoId: string) => {
             };
 
             if (variables.actionType === 4) {
-                message.success(actionMap[4]);
+                toast.success(actionMap[4]);
             } else if (variables.actionType === 3) {
-                message.success('操作成功');
+                toast.success('操作成功');
             }
         },
         onError: (error: any) => {
-            message.error(error.message || '操作失败，请稍后重试');
+            toast.error(error.message || '操作失败，请稍后重试');
         },
     });
 };

@@ -1,5 +1,5 @@
-import { Button, message } from 'antd';
-
+import { Button } from 'antd';
+import { toast } from '../../header/message';
 import { getAvatarSrc } from '../../../utils';
 import { useLoginModal } from '../../../provider/login-modal-provider';
 import defaultAvatar from '@/assets/icon/user.svg';
@@ -30,16 +30,16 @@ export function VideoAuthorCard({ authorProfile, onVisitHome }: VideoAuthorCardP
         if (authorProfile.haveFocus) {
             cancelFocus(authorProfile.userId, {
                 onSuccess: () => {
-                    message.success('\u5df2\u53d6\u6d88\u5173\u6ce8');
+                    toast.success('\u5df2\u53d6\u6d88\u5173\u6ce8');
                 },
-                onError: () => message.error('\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5'),
+                onError: () => toast.error('\u64cd\u4f5c\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5'),
             });
         } else {
             focus(authorProfile.userId, {
                 onSuccess: () => {
-                    message.success('\u5173\u6ce8\u6210\u529f');
+                    toast.success('\u5173\u6ce8\u6210\u529f');
                 },
-                onError: () => message.error('\u5173\u6ce8\u5931\u8d25'),
+                onError: () => toast.error('\u5173\u6ce8\u5931\u8d25'),
             });
         }
     };

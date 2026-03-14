@@ -45,3 +45,30 @@
 .bili-header-search .ant-input-group-addon .ant-btn:focus {
     background: linear-gradient(135deg, #f45b8c 0%, #ff8fb2 100%);
 }
+
+/* 自定义消息弹窗样式 */
+.custom-message .ant-message-notice-content {
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    border-radius: 100px !important; /* 圆润风格 */
+    box-shadow: 0 8px 32px rgba(251, 114, 153, 0.12) !important;
+    padding: 8px 20px !important;
+}
+
+/* 文字颜色和图标颜色 */
+.custom-message .ant-message-custom-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.custom-message .ant-message-success .anticon {
+    color: #fb7299 !important;
+}
+
+.custom-message .ant-message-notice-content span {
+    color: #6d3b4d !important; /* 深粉色文字 */
+    font-weight: 500;
+    font-size: 14px;
+}

@@ -5,9 +5,9 @@ import {
     UserOutlined,
     SyncOutlined,
 } from '@ant-design/icons';
-import { Button, ConfigProvider, Form, Input, Modal, Tabs, message, Tooltip } from 'antd';
+import { Button, ConfigProvider, Form, Input, Modal, Tabs, Tooltip } from 'antd';
 import { useState } from 'react';
-
+import { toast } from './message';
 import { useCheckCode, useLoginAccount, useRegisterAccount } from '../../hooks/queries/useAuth';
 import { useUserStore } from '../../stores/useUserStore';
 import { md5 } from '../../utils';
@@ -45,7 +45,7 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
 
     const ensureCheckCodeKey = () => {
         if (!checkCodeData?.checkCodeKey) {
-            message.warning('验证码已失效，请刷新重试');
+            toast.warning('验证码已失效，请刷新重试');
             refreshCheckCode();
             return null;
         }
@@ -67,14 +67,14 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
                 onSuccess: (data) => {
                     if (data) {
                         setUserInfo(data);
-                        message.success('欢迎回来！');
+                        toast.success('欢迎回来！');
                         onCancel();
                         return;
                     }
                     refreshCheckCode();
                 },
                 onError: (error: any) => {
-                    message.error(error.msg || '登录失败，请检查账号或验证码');
+                    toast.error(error.msg || '登录失败，请检查账号或验证码');
                     refreshCheckCode();
                 },
             },
@@ -95,12 +95,12 @@ const LoginModal = ({ isOpen, onCancel }: LoginModalProps) => {
             },
             {
                 onSuccess: () => {
-                    message.success('注册成功，快去登录吧');
+                    toast.success('注册成功，快去登录吧');
                     setActiveTab('login');
                     refreshCheckCode();
                 },
                 onError: (error: any) => {
-                    message.error(error.msg || '注册失败');
+                    toast.error(error.msg || '注册失败');
                     refreshCheckCode();
                 },
             },

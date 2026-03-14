@@ -8,7 +8,8 @@ import {
     MoreOutlined,
     CloseOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Input, Dropdown, Tooltip, Spin, message, Popover, Image } from 'antd';
+import { Avatar, Button, Input, Dropdown, Tooltip, Spin, Popover, Image } from 'antd';
+import { toast } from '../../header/message';
 import {
     useComments,
     useDoAction,
@@ -134,7 +135,7 @@ const CommentInputBox = ({
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !file.type.startsWith('image/')) {
-            message.warning('请选择有效的图片文件');
+            toast.warning('请选择有效的图片文件');
             return;
         }
 
@@ -155,11 +156,11 @@ const CommentInputBox = ({
 
     const handleSubmit = async () => {
         if (!content.trim()) {
-            message.warning('评论内容不能为空');
+            toast.warning('评论内容不能为空');
             return;
         }
         if (content.length > 500) {
-            message.warning('评论内容不能超过500字');
+            toast.warning('评论内容不能超过500字');
             return;
         }
 

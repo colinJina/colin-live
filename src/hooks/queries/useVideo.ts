@@ -29,7 +29,7 @@ import {
 } from '../../api/video';
 import { useUserStore } from '../../stores/useUserStore';
 import { useMemo, useState } from 'react';
-import { message } from 'antd';
+import { toast } from '../../pages/header/message';
 import defaultAvatar from '@/assets/icon/user.svg';
 
 type UseLoadVideoArgs = {
@@ -220,7 +220,7 @@ export const usePostComment = () => {
             queryClient.invalidateQueries({
                 queryKey: ['comments', 'loadComment', { videoId: variables.videoId }],
             });
-            message.success('发表成功');
+            toast.success('发表成功');
         },
         onError: () => {},
     });
@@ -233,7 +233,7 @@ export const useUploadImage = () => {
             return response?.data ?? '';
         },
         onError: (error: any) => {
-            message.error(error?.message || '图片上传失败，请重试');
+            toast.error(error?.message || '图片上传失败，请重试');
         },
     });
 };
@@ -248,7 +248,7 @@ export const useDoAction = () => {
             });
         },
         onError: () => {
-            message.error('操作失败，请重试');
+            toast.error('操作失败，请重试');
         },
     });
 };

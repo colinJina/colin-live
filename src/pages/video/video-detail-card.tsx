@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button, Input, Select, Switch, message } from 'antd';
+import { Button, Input, Select, Switch } from 'antd';
 import Artplayer from 'artplayer';
 import artplayerPluginDanmuku from 'artplayer-plugin-danmuku';
 import Hls from 'hls.js';
@@ -16,7 +16,7 @@ import {
 } from '../../hooks/queries/useVideo';
 import { useLoginModal } from '../../provider/login-modal-provider';
 import { useUserStore } from '../../stores/useUserStore';
-
+import { toast } from '../header/message';
 import UserActionPanel from './components/user-action-panel';
 import { VideoAuthorCard } from './components/video-author-card';
 import { VideoDanmuList } from './components/video-danmu-list';
@@ -226,10 +226,10 @@ export default function VideoDetailCard() {
             }
 
             setDanmuText('');
-            message.success('\u5f39\u5e55\u5df2\u53d1\u9001');
+            toast.success('\u5f39\u5e55\u5df2\u53d1\u9001');
         },
         onError: () => {
-            message.error('\u53d1\u9001\u5f39\u5e55\u5931\u8d25');
+            toast.error('\u53d1\u9001\u5f39\u5e55\u5931\u8d25');
         },
     });
 
@@ -345,12 +345,12 @@ export default function VideoDetailCard() {
         }
         const text = danmuText.trim();
         if (!text) {
-            message.warning('\u8bf7\u8f93\u5165\u5f39\u5e55\u5185\u5bb9');
+            toast.warning('\u8bf7\u8f93\u5165\u5f39\u5e55\u5185\u5bb9');
             return;
         }
 
         if (text.length > 200) {
-            message.warning('\u5f39\u5e55\u4e0d\u80fd\u8d85\u8fc7 200 \u4e2a\u5b57\u7b26');
+            toast.warning('\u5f39\u5e55\u4e0d\u80fd\u8d85\u8fc7 200 \u4e2a\u5b57\u7b26');
             return;
         }
 

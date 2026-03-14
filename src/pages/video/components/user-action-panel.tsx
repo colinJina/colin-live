@@ -4,7 +4,7 @@ import CollectionIcon from '../../../assets/icon/collection-icon.svg?react';
 import LikeIcon from '../../../assets/icon/like-icon.svg?react';
 import { useLoginModal } from '../../../provider/login-modal-provider';
 import { useUserStore } from '../../../stores/useUserStore';
-import { message } from 'antd';
+import { toast } from '../../header/message';
 import { useVideoActionMutation } from '../../../hooks/queries/useUhome';
 
 export interface userActionPanelProps {
@@ -40,7 +40,7 @@ export default function UserActionPanel({
         if (actionMutation.isPending) return;
 
         if (actionType === 4 && isCoined) {
-            message.warning('已经投过币啦~');
+            toast.warning('已经投过币啦~');
             return;
         }
 
