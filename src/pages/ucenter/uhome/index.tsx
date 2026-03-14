@@ -1,9 +1,10 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Zhuzhan from '../../../assets/icon/zhuzhan.svg?react';
 import UcenterArchive from '../../../assets/icon/ucenter-archive.svg?react';
 import UcenterUpload from '../../../assets/icon/ucenter-upload.svg?react';
 import UcenterDanmuku from '../../../assets/icon/ucenter-danmuku.svg?react';
 import UcenterComment from '../../../assets/icon/ucenter-comment.svg?react';
+import UserHoverCard from '../../header/user-hover-card';
 
 interface MenuItem {
     label: string;
@@ -46,19 +47,25 @@ const ICONS: Record<string, React.ElementType> = {
 };
 
 export default function UhomeLayout() {
+    const navigate = useNavigate();
     return (
         <div className="min-h-screen bg-[linear-gradient(160deg,#fff8fb_0%,#fff_45%,#fff4f9_100%)]">
             {/* 顶部导航栏 */}
-            <div className="relative overflow-hidden border-b border-white/70 bg-[linear-gradient(135deg,rgba(255,240,247,0.95)_0%,rgba(255,214,230,0.86)_48%,rgba(255,198,220,0.82)_100%)]">
-                <div className="pointer-events-none absolute inset-0">
+            <div className="relative border-b  border-white/70 bg-[linear-gradient(135deg,rgba(255,240,247,0.95)_0%,rgba(255,214,230,0.86)_48%,rgba(255,198,220,0.82)_100%)]">
+                <div className="pointer-events-none  overflow-hidden absolute inset-0">
                     <div className="absolute -left-10 -top-12 h-36 w-36 rounded-full bg-white/55 blur-3xl" />
                     <div className="absolute right-10 top-4 h-24 w-24 rounded-full bg-[#ff8bb4]/35 blur-3xl" />
                     <div className="absolute bottom-0 left-1/3 h-16 w-64 rounded-full bg-white/45 blur-2xl" />
                 </div>
 
-                <div className="relative z-10 flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-8">
+                <div className="relative z-20 flex flex-col gap-4 px-5 py-4 md:flex-row md:items-center md:justify-between md:px-8">
                     <div className="flex items-center gap-3">
-                        <div className="group flex cursor-pointer items-center gap-2 rounded-full border border-white/70 bg-white/72 px-4 py-2 shadow-[0_14px_30px_rgba(251,114,153,0.16)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/88">
+                        <div
+                            onClick={() => {
+                                navigate('/home');
+                            }}
+                            className="group flex cursor-pointer items-center gap-2 rounded-full border border-white/70 bg-white/72 px-4 py-2 shadow-[0_14px_30px_rgba(251,114,153,0.16)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/88"
+                        >
                             <Zhuzhan className="h-5 w-5 text-[var(--bili-pink-strong)] transition-transform duration-300 group-hover:scale-110" />
                             <span className="text-[15px] font-semibold tracking-[0.08em] text-[var(--text)]">
                                 首页
@@ -67,13 +74,10 @@ export default function UhomeLayout() {
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3">
+                        <UserHoverCard />
                         <button className="rounded-full bg-[linear-gradient(135deg,#fb7299_0%,#ff9fbe_100%)] px-5 py-2 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(251,114,153,0.28)] transition-transform hover:-translate-y-0.5">
                             投稿
                         </button>
-                        <div className="flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3 py-1 shadow-[0_10px_20px_rgba(251,114,153,0.12)]">
-                            <div className="h-8 w-8 rounded-full bg-[linear-gradient(135deg,#ffd1e1_0%,#fff_100%)] border border-pink-50" />
-                            <div className="text-[12px] font-semibold text-[#5b2b3b]">Colin</div>
-                        </div>
                     </div>
                 </div>
             </div>

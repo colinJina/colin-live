@@ -1,25 +1,17 @@
 import { Input } from 'antd';
 import type { ComponentType, SVGProps } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import Zhuzhan from '../../../public/colinLive.svg?react';
 import HeaderUploadButton from '../../component/headerUploadButton';
-import { useUserCountInfo } from '../../hooks/queries/useAuth';
-import { useLoginModal } from '../../provider/login-modal-provider';
-import { useUserStore } from '../../stores/useUserStore';
-import { cn, getAvatarSrc } from '../../utils';
 import CategoryModule from '../home/components/category-module';
 
 import Collect from '@/assets/icon/collect.svg?react';
 import CreateCenter from '@/assets/icon/create-center.svg?react';
 import History from '@/assets/icon/history.svg?react';
 import Message from '@/assets/icon/message.svg?react';
-import defaultAvatar from '@/assets/icon/user.svg';
-
+import UserHoverCard from './user-hover-card';
 const { Search } = Input;
-
 const SEARCH_PLACEHOLDER = '搜索视频、番剧或 UP 主';
-const USER_MENU_ITEMS = ['个人中心', '投稿管理', '退出登录'];
 const HEADER_LINKS = [
     { Icon: Message, label: '消息', path: '/message' },
     { Icon: Collect, label: '收藏', path: '/collect' },
@@ -40,31 +32,12 @@ const SearchIcon = ({ className }: { className?: string }) => (
         <path d="m21 21-4.3-4.3" />
     </svg>
 );
-const renderCount = (value?: number) => (typeof value === 'number' ? value : '--');
 
 export default function LayoutHeader() {
     const navigate = useNavigate();
-    const { openLoginModal } = useLoginModal();
-    const userInfo = useUserStore((state) => state.userInfo);
-    const clearUserInfo = useUserStore((state) => state.clearUserInfo);
-    const { data: userCountInfo } = useUserCountInfo(Boolean(userInfo));
-
-    const handleMenuClick = (item: string) => {
-        if (item === '退出登录') {
-            clearUserInfo();
-            navigate('/home');
-            return;
-        }
-
-        if (item === '个人中心' && userInfo?.userId) {
-            navigate(`/uhome/${encodeURIComponent(userInfo.userId)}`);
-        }
-    };
-
     const handleSearch = (value: string) => {
         const keyword = value.trim();
         if (!keyword) return;
-
         navigate(`/home?keyword=${encodeURIComponent(keyword)}`);
     };
 
@@ -117,60 +90,7 @@ export default function LayoutHeader() {
 
                     <div className="flex items-center gap-2 md:gap-3">
                         <div className="relative group/user py-2">
-                            <div
-                                className={cn(
-                                    'relative z-50 cursor-pointer rounded-full border border-white/75 bg-white/85 p-1 shadow-[0_10px_24px_rgba(251,114,153,0.16)] transition-all duration-500 ease-out',
-                                    userInfo &&
-                                        'group-hover/user:translate-y-6 group-hover/user:scale-[1.55]',
-                                )}
-                                onClick={() => !userInfo && openLoginModal()}
-                            >
-                                <img
-                                    src={userInfo ? getAvatarSrc(userInfo.avatar) : defaultAvatar}
-                                    className="h-9 w-9 rounded-full border border-[#ffd6e3] bg-white object-cover"
-                                    alt="avatar"
-                                />
-                            </div>
-
-                            {userInfo && (
-                                <div className="invisible  absolute left-1/2 top-14 w-72 -translate-x-1/2 translate-y-4 rounded-[24px] border border-white/75 bg-[linear-gradient(180deg,#fff8fb_0%,#ffffff_100%)] p-4 pt-10 opacity-0 shadow-[0_24px_60px_rgba(251,114,153,0.2)] ring-1 ring-[#ffd6e3]/70 transition-all duration-300 group-hover/user:visible group-hover/user:translate-y-0 group-hover/user:opacity-100">
-                                    <div className="mb-4 text-center text-lg font-bold text-slate-800">
-                                        {userInfo.nickName}
-                                    </div>
-
-                                    <div className="mb-4 grid grid-cols-3 rounded-[18px] border border-[#ffe0ea] bg-[#fff4f8] px-2 py-3 text-center">
-                                        <StatCard
-                                            label="关注"
-                                            value={renderCount(userCountInfo?.focusCount)}
-                                        />
-                                        <StatCard
-                                            label="粉丝"
-                                            value={renderCount(userCountInfo?.fansCount)}
-                                            bordered
-                                        />
-                                        <StatCard
-                                            label="硬币"
-                                            value={renderCount(userCountInfo?.currentCoinCount)}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        {USER_MENU_ITEMS.map((item) => (
-                                            <div
-                                                key={item}
-                                                onClick={() => handleMenuClick(item)}
-                                                className={`cursor-pointer rounded-2xl px-4 py-2.5 text-[13px] transition-colors ${
-                                                    item === '退出登录'
-                                                        ? 'text-red-500/80 hover:bg-red-50'
-                                                        : 'text-slate-600 hover:bg-[#fff1f6] hover:text-[var(--bili-pink-strong)]'
-                                                }`}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                            <UserHoverCard />
                         </div>
 
                         {HEADER_LINKS.map(({ Icon, label, path }) => (
@@ -207,28 +127,6 @@ export default function LayoutHeader() {
     );
 }
 
-function StatCard({
-    label,
-    value,
-    bordered = false,
-}: {
-    label: string;
-    value: string | number;
-    bordered?: boolean;
-}) {
-    return (
-        <div
-            className={cn(
-                'cursor-pointer transition-colors hover:text-[var(--bili-pink-strong)]',
-                bordered && 'border-x border-[#ffd9e5] px-4',
-            )}
-        >
-            <div className="text-sm font-bold text-slate-700">{value}</div>
-            <div className="text-[11px] font-light text-slate-400">{label}</div>
-        </div>
-    );
-}
-
 function NavIcon({
     Icon,
     label,
@@ -242,7 +140,7 @@ function NavIcon({
 
     return (
         <div
-            onClick={() => navigate(path)} // 绑定点击跳转
+            onClick={() => navigate(path)}
             className="group/icon flex cursor-pointer flex-col items-center justify-center rounded-[20px] px-2.5 py-2 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_26px_rgba(251,114,153,0.12)]"
         >
             <Icon className="h-5 w-5 text-[#9f4b67] transition-transform duration-300 group-hover/icon:-translate-y-0.5 group-hover/icon:text-[var(--bili-pink-strong)]" />
