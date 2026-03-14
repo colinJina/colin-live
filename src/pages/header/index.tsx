@@ -21,10 +21,10 @@ const { Search } = Input;
 const SEARCH_PLACEHOLDER = '搜索视频、番剧或 UP 主';
 const USER_MENU_ITEMS = ['个人中心', '投稿管理', '退出登录'];
 const HEADER_LINKS = [
-    { Icon: Message, label: '消息' },
-    { Icon: Collect, label: '收藏' },
-    { Icon: History, label: '历史' },
-    { Icon: CreateCenter, label: '创作中心' },
+    { Icon: Message, label: '消息', path: '/message' },
+    { Icon: Collect, label: '收藏', path: '/collect' },
+    { Icon: History, label: '历史', path: '/history' },
+    { Icon: CreateCenter, label: '创作中心', path: '/ucenter/home' },
 ] as const;
 const SearchIcon = ({ className }: { className?: string }) => (
     <svg
@@ -173,8 +173,8 @@ export default function LayoutHeader() {
                             )}
                         </div>
 
-                        {HEADER_LINKS.map(({ Icon, label }) => (
-                            <NavIcon key={label} Icon={Icon} label={label} />
+                        {HEADER_LINKS.map(({ Icon, label, path }) => (
+                            <NavIcon key={label} Icon={Icon} label={label} path={path} />
                         ))}
 
                         <div className="cursor-pointer transition-all hover:opacity-90 active:scale-95">
@@ -229,9 +229,22 @@ function StatCard({
     );
 }
 
-function NavIcon({ Icon, label }: { Icon: ComponentType<SVGProps<SVGSVGElement>>; label: string }) {
+function NavIcon({
+    Icon,
+    label,
+    path,
+}: {
+    Icon: ComponentType<SVGProps<SVGSVGElement>>;
+    label: string;
+    path: string;
+}) {
+    const navigate = useNavigate();
+
     return (
-        <div className="group/icon flex cursor-pointer flex-col items-center justify-center rounded-[20px] px-2.5 py-2 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_26px_rgba(251,114,153,0.12)]">
+        <div
+            onClick={() => navigate(path)} // 绑定点击跳转
+            className="group/icon flex cursor-pointer flex-col items-center justify-center rounded-[20px] px-2.5 py-2 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_26px_rgba(251,114,153,0.12)]"
+        >
             <Icon className="h-5 w-5 text-[#9f4b67] transition-transform duration-300 group-hover/icon:-translate-y-0.5 group-hover/icon:text-[var(--bili-pink-strong)]" />
             <span className="mt-1 text-[11px] font-medium text-[#8a5065] transition-colors group-hover/icon:text-[var(--bili-pink-strong)]">
                 {label}
