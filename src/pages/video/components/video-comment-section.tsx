@@ -91,7 +91,7 @@ const CommentInputBox = ({
     isLoading = false,
     onCancel,
     onSubmit,
-    allowImage = true, // 一级评论 true，二级回复 false
+    allowImage = true,
 }: {
     placeholder?: string;
     autoFocus?: boolean;
@@ -211,7 +211,6 @@ const CommentInputBox = ({
                     className="bg-transparent border-none text-sm !text-[#6f3f55] !shadow-none placeholder:!text-[#c290a5] focus:!shadow-none mb-2 resize-none"
                 />
 
-                {/* 图片预览（仅一级评论） */}
                 {previewUrl && allowImage && (
                     <div className="relative mt-2 inline-block">
                         <img
@@ -493,6 +492,8 @@ export default function VideoCommentSection({ videoId }: VideoCommentSectionProp
     const loadMoreRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        console.log(comments);
+
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) fetchNextPage();

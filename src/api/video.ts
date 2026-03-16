@@ -317,3 +317,11 @@ export const uploadImageApi = (file: File): Promise<ResponseVO<string> | null> =
         data: formData,
     }) as Promise<ResponseVO<string> | null>;
 };
+
+export const postVideo = (params: any): Promise<ResponseVO<null>> => {
+    return request<null>({
+        url: '/ucenter/postVideo',
+        method: 'POST',
+        data: params,
+    }) as Promise<ResponseVO<null>>;
+};

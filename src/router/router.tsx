@@ -6,7 +6,7 @@ import MainLayout from '../pages/layout/main-layout';
 import VideoDetailCard from '../pages/video/video-detail-card';
 import UhomeLayout from '../pages/ucenter/uhome';
 import UcenterHome from '../pages/ucenter/home';
-import UcenterUpload from '../pages/ucenter/upload';
+import UcenterUpload from '../pages/ucenter/ucenter-upload';
 import UcenterArchive from '../pages/ucenter/archive';
 import UcenterComments from '../pages/ucenter/comments';
 import UcenterDanmaku from '../pages/ucenter/danmaku';

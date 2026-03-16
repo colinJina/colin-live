@@ -15,6 +15,7 @@ import {
     loadVideo,
     loadVideoPList,
     postCommentApi,
+    postVideo,
     uploadImageApi,
     type ApiComment,
     type ApiCommentResponseData,
@@ -225,7 +226,25 @@ export const usePostComment = () => {
         onError: () => {},
     });
 };
-
+export const usePostVideo = () => {
+    return useMutation({
+        mutationFn: async (params: any) => {
+            const response = await postVideo(params);
+            if (response?.code !== 200) {
+                throw new Error(response?.info || '发布视频失败');
+            }
+            return response.data;
+        },
+        onSuccess: () => {
+            toast.success('视频发布成功！');
+            // TODO: 发布成功后，可以做路由跳转
+            // window.location.href = '/user/videos';
+        },
+        onError: (error: any) => {
+            toast.error(error?.message || '网络错误，请重试');
+        },
+    });
+};
 export const useUploadImage = () => {
     return useMutation({
         mutationFn: async (file: File): Promise<string> => {
