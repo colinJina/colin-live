@@ -8,20 +8,16 @@ import {
 } from '../../hooks/queries/useUcenterStatistics';
 
 export default function UcenterHome() {
-    /**
-     * dataType 约定（与后端保持一致）
-     * 1=播放 2=弹幕 3=评论 4=点赞 5=收藏 6=投币 7=粉丝
-     */
     const STAT_ITEMS = useMemo(
         () =>
             [
-                { label: '粉丝', dataType: 7, totalKey: 'userCount', icon: '👥' },
-                { label: '播放', dataType: 1, totalKey: 'playCount', icon: '▶️' },
-                { label: '评论', dataType: 3, totalKey: 'commentCount', icon: '💬' },
-                { label: '弹幕', dataType: 2, totalKey: 'danmuCount', icon: '📺' },
-                { label: '点赞', dataType: 4, totalKey: 'likeCount', icon: '👍' },
-                { label: '收藏', dataType: 5, totalKey: 'collectCount', icon: '⭐' },
-                { label: '投币', dataType: 6, totalKey: 'coinCount', icon: '🪙' },
+                { label: '粉丝', dataType: 1, totalKey: 'userCount', icon: '👥' },
+                { label: '播放', dataType: 0, totalKey: 'playCount', icon: '▶️' },
+                { label: '评论', dataType: 5, totalKey: 'commentCount', icon: '💬' },
+                { label: '弹幕', dataType: 6, totalKey: 'danmuCount', icon: '📺' },
+                { label: '点赞', dataType: 2, totalKey: 'likeCount', icon: '👍' },
+                { label: '收藏', dataType: 3, totalKey: 'collectCount', icon: '⭐' },
+                { label: '投币', dataType: 4, totalKey: 'coinCount', icon: '🪙' },
             ] as const,
         [],
     );

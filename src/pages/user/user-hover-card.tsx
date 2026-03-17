@@ -13,7 +13,7 @@ export default function UserHoverCard() {
         if (item === '退出登录') return handleLogout();
 
         if (item === '个人中心' && userInfo?.userId) {
-            navigate(`/uhome/${encodeURIComponent(userInfo.userId)}`);
+            navigate(`/user/${encodeURIComponent(userInfo.userId)}`);
         } else if (item === '投稿管理') {
             navigate('/ucenter/content/archives');
         }

@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Zhuzhan from '../../assets/icon/colinLive.svg?react';
 import HeaderUploadButton from '../../component/headerUploadButton';
-import CategoryModule from '../home/components/category-module';
-import UserHoverCard from './user-hover-card';
+import UserHoverCard from '../user/user-hover-card';
 
 import Collect from '@/assets/icon/collect.svg?react';
 import CreateCenter from '@/assets/icon/create-center.svg?react';
@@ -127,7 +126,6 @@ export default function LayoutHeader() {
                     </div>
                 </div>
             </div>
-            <CategoryModule />
         </>
     );
 }

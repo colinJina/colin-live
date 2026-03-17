@@ -10,6 +10,7 @@ import UcenterUpload from '../pages/ucenter/ucenter-upload';
 import UcenterArchive from '../pages/ucenter/uArchive/archive';
 import UcenterComments from '../pages/ucenter/comments';
 import UcenterDanmaku from '../pages/ucenter/danmaku';
+import UserProfile from '../pages/user';
 
 const routes = createRoutesFromElements(
     <>
@@ -20,6 +21,7 @@ const routes = createRoutesFromElements(
             <Route path="/video/:videoId" element={<VideoDetailCard />} />
             {/* <Route path="/v/hot" element={<Hot />} /> */}
             <Route path="/v/:categoryCode/:subCategoryCode?" element={<BreadcrumbCategory />} />
+            <Route path="/user/:userId" element={<UserProfile />} />
         </Route>
         <Route element={<UhomeLayout />}>
             <Route path="/ucenter/home" element={<UcenterHome />} />

@@ -4,7 +4,7 @@ import UcenterArchive from '../../../assets/icon/ucenter-archive.svg?react';
 import UcenterUpload from '../../../assets/icon/ucenter-upload.svg?react';
 import UcenterDanmuku from '../../../assets/icon/ucenter-danmuku.svg?react';
 import UcenterComment from '../../../assets/icon/ucenter-comment.svg?react';
-import UserHoverCard from '../../header/user-hover-card';
+import UserHoverCard from '../../user/user-hover-card';
 
 interface MenuItem {
     label: string;
