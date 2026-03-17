@@ -64,7 +64,7 @@ export default function UcenterHome() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {videoStats.map((item, idx) => (
+                    {videoStats.map((item) => (
                         <div
                             key={item.label}
                             className={`relative overflow-hidden rounded-[20px] p-5 transition-all hover:scale-[1.02] ${

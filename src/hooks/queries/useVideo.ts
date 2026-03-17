@@ -10,7 +10,9 @@ import { useMemo, useState } from 'react';
 import {
     deleteVideo,
     doAction,
+    delUcenterComment,
     getVideoInfo,
+    loadComment,
     loadCommentApi,
     loadDanmu,
     loadRecommendVideo,
@@ -27,6 +29,7 @@ import {
     type CommentData,
     type DeleteVideoParams,
     type DoActionParams,
+    type LoadUcenterCommentParams,
     type LoadVideoListParams,
     type PaginationResultVO,
     type PostCommentParams,
@@ -35,6 +38,7 @@ import {
     type VideoInfo,
     type VideoInfoPost,
     type VideoInfoFile,
+    type VideoComment,
 } from '../../api/video';
 import { toast } from '../../pages/header/message';
 import { useUserStore } from '../../stores/useUserStore';
@@ -125,6 +129,70 @@ export const useLoadVideoList = ({ enabled, status, videoNameFuzzy }: UseLoadVid
             return lastPage.pageNo + 1;
         },
         refetchOnWindowFocus: false,
+    });
+};
+
+type UseLoadUcenterCommentsArgs = {
+    enabled: boolean;
+    videoId?: string;
+};
+
+/** 创作中心：分页加载收到的评论（后端已扁平化） */
+export const useLoadUcenterComments = ({ enabled, videoId }: UseLoadUcenterCommentsArgs) => {
+    return useInfiniteQuery<
+        PaginationResultVO<VideoComment>,
+        unknown,
+        InfiniteData<PaginationResultVO<VideoComment>>,
+        readonly ['ucenter', 'loadComment', { videoId?: string }],
+        number
+    >({
+        queryKey: ['ucenter', 'loadComment', { videoId }],
+        enabled,
+        initialPageParam: 1,
+        queryFn: async ({ pageParam }) => {
+            const params: LoadUcenterCommentParams = {
+                videoId,
+                pageNo: Number(pageParam),
+            };
+            const response = await loadComment(params);
+            return (
+                response?.data ?? {
+                    totalCount: 0,
+                    pageSize: 15,
+                    pageNo: Number(pageParam),
+                    pageTotal: 0,
+                    list: [],
+                }
+            );
+        },
+        getNextPageParam: (lastPage: PaginationResultVO<VideoComment>) => {
+            if (!lastPage) return undefined;
+            if (!lastPage.pageTotal) return undefined;
+            if (lastPage.pageNo >= lastPage.pageTotal) return undefined;
+            return lastPage.pageNo + 1;
+        },
+        refetchOnWindowFocus: false,
+    });
+};
+
+export const useDelUcenterComment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (commentId: number) => {
+            const response = await delUcenterComment(commentId);
+            if (!response || response.code !== 200) {
+                throw new Error(response?.info || '删除失败');
+            }
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ucenter', 'loadComment'] });
+            toast.success('已删除');
+        },
+        onError: (err: unknown) => {
+            const message = err instanceof Error ? err.message : '';
+            toast.error(message || '删除失败，请重试');
+        },
     });
 };
 

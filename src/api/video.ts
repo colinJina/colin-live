@@ -123,6 +123,10 @@ export interface VideoInfoResultVo {
 
 export interface VideoComment {
     commentId: number | string;
+    pCommentId?: number;
+    videoId?: string;
+    videoUserId?: string;
+    userId?: string;
     content?: string;
     avatar?: string;
     nickName?: string;
@@ -131,7 +135,15 @@ export interface VideoComment {
     postTime?: string;
     likeCount?: number;
     goodCount?: number;
+    hateCount?: number;
     replyCount?: number;
+    imgPath?: string | null;
+    replyAvatar?: string | null;
+    replyNickName?: string | null;
+    replyUserId?: string | null;
+    topType?: number;
+    videoName?: string;
+    videoCover?: string;
 }
 
 export interface VideoDanmu {
@@ -185,18 +197,29 @@ export const getVideoInfo = (videoId: string): Promise<ResponseVO<VideoInfoResul
     }) as Promise<ResponseVO<VideoInfoResultVo> | null>;
 };
 
+export interface LoadUcenterCommentParams {
+    pageNo?: number;
+    videoId?: string;
+}
+
 export const loadComment = (
-    videoId: string,
-    pageNo = 1,
+    params: LoadUcenterCommentParams,
 ): Promise<ResponseVO<PaginationResultVO<VideoComment>> | null> => {
     return request<PaginationResultVO<VideoComment>>({
         url: '/ucenter/loadComment',
         method: 'GET',
-        params: {
-            pageNo,
-            videoId,
-        },
+        params,
     }) as Promise<ResponseVO<PaginationResultVO<VideoComment>> | null>;
+};
+
+export const delUcenterComment = (commentId: number): Promise<ResponseVO<null> | null> => {
+    return request<null>({
+        url: '/ucenter/delComment',
+        method: 'POST',
+        params: {
+            commentId,
+        },
+    }) as Promise<ResponseVO<null> | null>;
 };
 
 export const loadDanmu = (
