@@ -5,32 +5,40 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
 import {
+    deleteVideo,
     doAction,
     getVideoInfo,
     loadCommentApi,
     loadDanmu,
     loadRecommendVideo,
     loadVideo,
+    loadVideoList,
     loadVideoPList,
     postCommentApi,
     postVideo,
+    saveVideoInteraction,
     uploadImageApi,
     type ApiComment,
     type ApiCommentResponseData,
     type ApiUserAction,
     type CommentData,
+    type DeleteVideoParams,
     type DoActionParams,
+    type LoadVideoListParams,
     type PaginationResultVO,
     type PostCommentParams,
+    type SaveVideoInteractionParams,
     type VideoDanmu,
     type VideoInfo,
+    type VideoInfoPost,
     type VideoInfoFile,
 } from '../../api/video';
-import { useUserStore } from '../../stores/useUserStore';
-import { useMemo, useState } from 'react';
 import { toast } from '../../pages/header/message';
+import { useUserStore } from '../../stores/useUserStore';
+
 import defaultAvatar from '@/assets/icon/user.svg';
 
 type UseLoadVideoArgs = {
@@ -67,6 +75,51 @@ export const useLoadVideoByCategory = ({ pCategoryId, categoryId, enabled }: Use
             );
         },
         getNextPageParam: (lastPage: PaginationResultVO<VideoInfo>) => {
+            if (!lastPage) return undefined;
+            if (!lastPage.pageTotal) return undefined;
+            if (lastPage.pageNo >= lastPage.pageTotal) return undefined;
+            return lastPage.pageNo + 1;
+        },
+        refetchOnWindowFocus: false,
+    });
+};
+
+type UseLoadVideoListArgs = {
+    enabled: boolean;
+    status?: number;
+    videoNameFuzzy?: string;
+};
+
+export const useLoadVideoList = ({ enabled, status, videoNameFuzzy }: UseLoadVideoListArgs) => {
+    return useInfiniteQuery<
+        PaginationResultVO<VideoInfoPost>,
+        unknown,
+        InfiniteData<PaginationResultVO<VideoInfoPost>>,
+        readonly ['ucenter', 'loadVideoList', { status?: number; videoNameFuzzy?: string }],
+        number
+    >({
+        queryKey: ['ucenter', 'loadVideoList', { status, videoNameFuzzy }],
+        enabled,
+        initialPageParam: 1,
+        queryFn: async ({ pageParam }) => {
+            const params: LoadVideoListParams = {
+                status,
+                videoNameFuzzy,
+                pageNo: Number(pageParam),
+            };
+            const response = await loadVideoList(params);
+            return (
+                response?.data ?? {
+                    totalCount: 0,
+                    pageSize: 20,
+                    pageNo: Number(pageParam),
+                    pageTotal: 0,
+                    list: [],
+                }
+            );
+        },
+        getNextPageParam: (lastPage: PaginationResultVO<VideoInfoPost>) => {
+            if (!lastPage) return undefined;
             if (!lastPage.pageTotal) return undefined;
             if (lastPage.pageNo >= lastPage.pageTotal) return undefined;
             return lastPage.pageNo + 1;
@@ -184,7 +237,9 @@ export const useComments = (videoId: string, initialOrderType: number = 0) => {
             );
         },
         getNextPageParam: (lastPage: ApiCommentResponseData) => {
+            if (!lastPage) return undefined;
             const { commentData } = lastPage;
+            if (!commentData) return undefined;
             if (!commentData.pageTotal) return undefined;
             if (commentData.pageNo >= commentData.pageTotal) return undefined;
             return commentData.pageNo + 1;
@@ -194,12 +249,16 @@ export const useComments = (videoId: string, initialOrderType: number = 0) => {
 
     const comments = useMemo(() => {
         if (!query.data) return [];
-        return query.data.pages.flatMap((page) =>
-            page.commentData.list.map((item) => adaptCommentData(item, page.userActionList)),
-        );
+        return query.data.pages
+            .filter(Boolean)
+            .flatMap((page) =>
+                (page.commentData?.list ?? []).map((item) =>
+                    adaptCommentData(item, page.userActionList ?? []),
+                ),
+            );
     }, [query.data]);
 
-    const totalCount = query.data?.pages[0]?.commentData.totalCount || 0;
+    const totalCount = query.data?.pages?.find(Boolean)?.commentData?.totalCount || 0;
 
     return {
         comments,
@@ -223,12 +282,18 @@ export const usePostComment = () => {
             });
             toast.success('发表成功');
         },
-        onError: () => {},
+        onError: (err: unknown) => {
+            const message =
+                typeof err === 'object' && err && 'msg' in err
+                    ? String((err as { msg?: unknown }).msg)
+                    : '';
+            toast.error(message || '发表失败');
+        },
     });
 };
 export const usePostVideo = () => {
     return useMutation({
-        mutationFn: async (params: any) => {
+        mutationFn: async (params: Record<string, unknown>) => {
             const response = await postVideo(params);
             if (response?.code !== 200) {
                 throw new Error(response?.info || '发布视频失败');
@@ -240,8 +305,9 @@ export const usePostVideo = () => {
             // TODO: 发布成功后，可以做路由跳转
             // window.location.href = '/user/videos';
         },
-        onError: (error: any) => {
-            toast.error(error?.message || '网络错误，请重试');
+        onError: (error: unknown) => {
+            const message = error instanceof Error ? error.message : '';
+            toast.error(message || '网络错误，请重试');
         },
     });
 };
@@ -251,8 +317,9 @@ export const useUploadImage = () => {
             const response = await uploadImageApi(file);
             return response?.data ?? '';
         },
-        onError: (error: any) => {
-            toast.error(error?.message || '图片上传失败，请重试');
+        onError: (error: unknown) => {
+            const message = error instanceof Error ? error.message : '';
+            toast.error(message || '图片上传失败，请重试');
         },
     });
 };
@@ -268,6 +335,48 @@ export const useDoAction = () => {
         },
         onError: () => {
             toast.error('操作失败，请重试');
+        },
+    });
+};
+
+export const useSaveVideoInteraction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (params: SaveVideoInteractionParams) => {
+            const response = await saveVideoInteraction(params);
+            if (!response || response.code !== 200) {
+                throw new Error(response?.info || '更新失败');
+            }
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ucenter', 'loadVideoList'] });
+            toast.success('已更新');
+        },
+        onError: (err: unknown) => {
+            const message = err instanceof Error ? err.message : '';
+            toast.error(message || '更新失败，请重试');
+        },
+    });
+};
+
+export const useDeleteVideo = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (params: DeleteVideoParams) => {
+            const response = await deleteVideo(params);
+            if (!response || response.code !== 200) {
+                throw new Error(response?.info || '删除失败');
+            }
+            return response.data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ucenter', 'loadVideoList'] });
+            toast.success('已删除');
+        },
+        onError: (err: unknown) => {
+            const message = err instanceof Error ? err.message : '';
+            toast.error(message || '删除失败，请重试');
         },
     });
 };

@@ -1,4 +1,4 @@
-import { EmptyPanel } from './archive';
+import { EmptyPanel } from './uArchive/archive-components';
 
 export default function UcenterDanmaku() {
     return (

@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import { Upload, Progress, Form, Input, Radio, Select, Button, message, Checkbox } from 'antd';
 import type { UploadProps } from 'antd';
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 
 import { useAllCategory } from '../../hooks/queries/useCategory';
 import { usePostVideo, useUploadImage } from '../../hooks/queries/useVideo';

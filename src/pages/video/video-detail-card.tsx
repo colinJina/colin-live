@@ -228,8 +228,8 @@ export default function VideoDetailCard() {
             setDanmuText('');
             toast.success('\u5f39\u5e55\u5df2\u53d1\u9001');
         },
-        onError: () => {
-            toast.error('\u53d1\u9001\u5f39\u5e55\u5931\u8d25');
+        onError: (err: any) => {
+            toast.error(err.msg);
         },
     });
 

@@ -1,4 +1,5 @@
-import { EmptyPanel } from './archive';
+import { EmptyPanel } from './uArchive/archive-components';
+
 export default function UcenterComments() {
     return (
         <div className="space-y-4">

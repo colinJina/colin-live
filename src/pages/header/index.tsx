@@ -1,16 +1,15 @@
-import { Input } from 'antd';
-import type { ComponentType, SVGProps } from 'react';
+import type { ComponentType, KeyboardEvent, SVGProps } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Zhuzhan from '../../../public/colinLive.svg?react';
+
+import Zhuzhan from '../../assets/icon/colinLive.svg?react';
 import HeaderUploadButton from '../../component/headerUploadButton';
 import CategoryModule from '../home/components/category-module';
+import UserHoverCard from './user-hover-card';
 
 import Collect from '@/assets/icon/collect.svg?react';
 import CreateCenter from '@/assets/icon/create-center.svg?react';
 import History from '@/assets/icon/history.svg?react';
 import Message from '@/assets/icon/message.svg?react';
-import UserHoverCard from './user-hover-card';
-const { Search } = Input;
 const SEARCH_PLACEHOLDER = '搜索视频、番剧或 UP 主';
 const HEADER_LINKS = [
     { Icon: Message, label: '消息', path: '/message' },
@@ -39,6 +38,11 @@ export default function LayoutHeader() {
         const keyword = value.trim();
         if (!keyword) return;
         navigate(`/home?keyword=${encodeURIComponent(keyword)}`);
+    };
+
+    const handleSearchFromInput = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key !== 'Enter') return;
+        handleSearch(event.currentTarget.value);
     };
 
     return (
@@ -80,6 +84,7 @@ export default function LayoutHeader() {
                             <input
                                 type="text"
                                 placeholder={SEARCH_PLACEHOLDER}
+                                onKeyDown={handleSearchFromInput}
                                 className="h-10 w-full rounded-xl border border-white/60 bg-white/60 px-4 pr-11 text-[13px] text-[#5a3040] backdrop-blur-md outline-none transition-all duration-300 placeholder:text-slate-400 hover:border-[#ffd6e3] hover:bg-white/90 focus:border-[#fb7299] focus:bg-white focus:ring-4 focus:ring-[#fb7299]/10"
                             />
                             <div className="absolute right-0 flex h-10 w-11 cursor-pointer items-center justify-center rounded-r-xl text-[#9f4b67] transition-colors hover:text-[var(--bili-pink-strong)]">

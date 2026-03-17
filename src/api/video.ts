@@ -53,6 +53,13 @@ export interface VideoInfo {
     categoryFullName?: string;
 }
 
+export interface VideoInfoPost extends VideoInfo {
+    /** 稿件状态 */
+    status?: number;
+    /** 稿件状态文案 */
+    statusName?: string;
+}
+
 export interface PaginationResultVO<T> {
     totalCount: number;
     pageSize: number;
@@ -70,6 +77,21 @@ export interface LoadVideoParams {
 export const loadVideo = (params: LoadVideoParams) => {
     return request<PaginationResultVO<VideoInfo>>({
         url: '/video/loadVideo',
+        method: 'GET',
+        params,
+    });
+};
+
+export interface LoadVideoListParams {
+    /** -1=处理中 */
+    status?: number;
+    pageNo?: number;
+    videoNameFuzzy?: string;
+}
+
+export const loadVideoList = (params: LoadVideoListParams) => {
+    return request<PaginationResultVO<VideoInfoPost>>({
+        url: '/ucenter/loadVideoList',
         method: 'GET',
         params,
     });
@@ -318,10 +340,40 @@ export const uploadImageApi = (file: File): Promise<ResponseVO<string> | null> =
     }) as Promise<ResponseVO<string> | null>;
 };
 
-export const postVideo = (params: any): Promise<ResponseVO<null>> => {
+export const postVideo = (params: Record<string, unknown>): Promise<ResponseVO<null>> => {
     return request<null>({
         url: '/ucenter/postVideo',
         method: 'POST',
         data: params,
     }) as Promise<ResponseVO<null>>;
+};
+
+export interface SaveVideoInteractionParams {
+    videoId: string;
+    /** 互动开关串，最长 3 */
+    interaction?: string;
+}
+
+/** 更新稿件互动开关 */
+export const saveVideoInteraction = (
+    params: SaveVideoInteractionParams,
+): Promise<ResponseVO<null> | null> => {
+    return request<null>({
+        url: '/ucenter/saveVideoInteraction',
+        method: 'POST',
+        data: params,
+    }) as Promise<ResponseVO<null> | null>;
+};
+
+export interface DeleteVideoParams {
+    videoId: string;
+}
+
+/** 删除稿件 */
+export const deleteVideo = (params: DeleteVideoParams): Promise<ResponseVO<null> | null> => {
+    return request<null>({
+        url: '/ucenter/deleteVideo',
+        method: 'POST',
+        data: params,
+    }) as Promise<ResponseVO<null> | null>;
 };
