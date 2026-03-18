@@ -102,7 +102,11 @@ export default function LayoutHeader() {
                         ))}
 
                         <div className="cursor-pointer transition-all hover:opacity-90 active:scale-95">
-                            <HeaderUploadButton />
+                            <HeaderUploadButton
+                                onClick={() => {
+                                    navigate('/ucenter/upload');
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

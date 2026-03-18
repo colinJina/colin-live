@@ -102,3 +102,34 @@ export function formatDuration(duration: number | string | undefined): string {
         return `${pad(minutes)}:${pad(seconds)}`;
     }
 }
+
+/**
+ * C端数字格式化工具 (播放量、粉丝数、关注数)
+ * 规则：
+ * - < 10000: 直接展示 (例如: 9527)
+ * - >= 10000: 展示万位，保留一位小数 (例如: 1.2万, 10万)
+ * - >= 100000000: 展示亿位，保留一位小数 (例如: 1.5亿, 10亿)
+ * @param count 数字或可转为数字的字符串
+ */
+export const formatCount = (count: number | string | undefined | null): string => {
+    if (count === undefined || count === null) return '0';
+
+    const num = Number(count);
+    if (isNaN(num) || num <= 0) return '0';
+
+    if (num < 10000) {
+        return num.toString();
+    }
+
+    if (num < 100000000) {
+        // 计算万位，保留一位小数
+        const wan = (num / 10000).toFixed(1);
+        // 如果小数位是0，去掉小数位 (1.0万 -> 1万)
+        return `${parseFloat(wan)}万`;
+    }
+
+    // 计算亿位，保留一位小数
+    const yi = (num / 100000000).toFixed(1);
+    // 如果小数位是0，去掉小数位 (1.0亿 -> 1亿)
+    return `${parseFloat(yi)}亿`;
+};

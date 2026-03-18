@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 
 import defaultAvatar from '@/assets/icon/user.svg';
 import UserProfileModal from './user-profile-modal';
+import StatisticsBar from './statistics-bar';
 import { getAvatarSrc } from '../../../utils';
 import type { UserInfoVO } from '../../../api/uhome';
 
@@ -20,16 +21,19 @@ export default function UserProfileHeader({ userInfo }: UserProfileHeaderProps) 
             className="relative w-full overflow-hidden rounded-[28px] border border-white/70 bg-[linear-gradient(135deg,rgba(255,244,248,0.96)_0%,rgba(255,227,239,0.93)_34%,rgba(255,208,226,0.88)_68%,rgba(255,195,216,0.9)_100%)]"
             style={{ boxShadow: '0 18px 44px rgba(251,114,153,0.14)' }}
         >
+            {/* 背景装饰 */}
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute -left-10 -top-14 h-44 w-44 rounded-full bg-white/50 blur-3xl" />
-                <div className="absolute right-[12%] top-7 h-28 w-28 rounded-full bg-[#ff8db2]/35 blur-3xl" />
-                <div className="absolute bottom-[-36px] left-[24%] h-24 w-80 rounded-full bg-white/35 blur-3xl" />
-                <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/70 to-transparent" />
+                <div className="absolute -left-10 -top-14 h-52 w-52 rounded-full bg-white/50 blur-3xl" />
+                <div className="absolute right-[10%] top-5 h-36 w-36 rounded-full bg-[#ff8db2]/30 blur-3xl" />
+                <div className="absolute bottom-[-36px] left-[24%] h-28 w-80 rounded-full bg-white/35 blur-3xl" />
+                <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/60 to-transparent" />
             </div>
 
-            <div className="relative z-20 flex flex-col gap-3 px-5 py-5 md:flex-row md:items-center md:justify-between md:px-7">
-                <div className="flex items-center gap-4">
-                    <div className="relative h-14 w-14 overflow-hidden rounded-full border border-white/75 bg-white/80 p-1 shadow-[0_14px_28px_rgba(251,114,153,0.16)]">
+            <div className="relative z-20 flex flex-col gap-4 px-6 py-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-7">
+                {/* 左侧：头像 + 基本信息 */}
+                <div className="flex items-center gap-5">
+                    {/* 头像 — 80px */}
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-[3px] border-white/80 bg-white/80 p-0.5 shadow-[0_16px_32px_rgba(251,114,153,0.18)]">
                         <img
                             src={avatar}
                             alt="avatar"
@@ -43,18 +47,19 @@ export default function UserProfileHeader({ userInfo }: UserProfileHeaderProps) 
                         </div>
 
                         <div className="mt-1 flex items-center gap-3">
-                            <div className="max-w-[260px] truncate text-[22px] font-extrabold text-[#4a2232]">
+                            <div className="max-w-[260px] truncate text-[24px] font-extrabold leading-snug text-[#4a2232]">
                                 {userInfo?.nickName || '--'}
                             </div>
                             <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="rounded-full cursor-pointer border border-white/75 bg-white/70 px-3 py-1 text-[12px] font-semibold text-[#8a5065] shadow-[0_12px_22px_rgba(251,114,153,0.12)] transition-all hover:-translate-y-0.5 hover:bg-white/90 hover:text-[var(--bili-pink-strong)]"
+                                className="shrink-0 rounded-full cursor-pointer border border-white/75 bg-white/70 px-3 py-1 text-[12px] font-semibold text-[#8a5065] shadow-[0_12px_22px_rgba(251,114,153,0.12)] transition-all hover:-translate-y-0.5 hover:bg-white/90 hover:text-[var(--bili-pink-strong)]"
                             >
                                 编辑资料
                             </button>
                         </div>
 
-                        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-[#8a5065]/80">
+                        {/* 简介 & 公告 */}
+                        <div className="mt-2.5 flex flex-col gap-1.5 text-[13px] text-[#8a5065]/80 md:flex-row md:items-center md:gap-x-4">
                             <div className="flex items-center gap-1.5 max-w-[300px]">
                                 <span className="shrink-0 font-bold text-[#c26683]">简介:</span>
                                 <span className="truncate">
@@ -77,7 +82,16 @@ export default function UserProfileHeader({ userInfo }: UserProfileHeaderProps) 
                         </div>
                     </div>
                 </div>
+
+                <StatisticsBar
+                    following={userInfo?.focusCount}
+                    followers={userInfo?.fansCount}
+                    likes={userInfo?.likeCount}
+                    plays={userInfo?.playCount}
+                    className="mt-1 md:mt-0 md:pr-2"
+                />
             </div>
+
             <UserProfileModal
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

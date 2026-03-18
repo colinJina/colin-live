@@ -72,12 +72,8 @@ export default function UhomeLayout() {
                             </span>
                         </div>
                     </div>
-
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex flex-wrap items-center mr-20 md:mr-28">
                         <UserHoverCard />
-                        <button className="rounded-full bg-[linear-gradient(135deg,#fb7299_0%,#ff9fbe_100%)] px-5 py-2 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(251,114,153,0.28)] transition-transform hover:-translate-y-0.5">
-                            投稿
-                        </button>
                     </div>
                 </div>
             </div>
