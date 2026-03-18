@@ -24,3 +24,39 @@
     font-weight: 500;
     font-size: 14px;
 }
+
+/* 1. 针对 Chrome, Safari, Edge 和所有基于 Webkit 的浏览器 */
+::-webkit-scrollbar {
+    width: 6px; /* 纵向滚动条宽度 */
+    height: 6px; /* 横向滚动条高度 */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(251, 114, 153, 0.2); /* 默认极浅粉色 */
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+:hover::-webkit-scrollbar-thumb {
+    background: rgba(251, 114, 153, 0.4);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #fb7299 !important;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(251, 114, 153, 0.3) transparent;
+}
+
+.ant-modal-body,
+.ant-table-body,
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(251, 114, 153, 0.3) transparent;
+}
