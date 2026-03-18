@@ -12,6 +12,7 @@ interface UserInfo {
 interface UserState {
     userInfo: UserInfo | null;
     setUserInfo: (info: UserInfo) => void;
+    updateUserProfile: (patch: Pick<UserInfo, 'nickName' | 'avatar'>) => void;
     clearUserInfo: () => void;
 }
 
@@ -41,6 +42,17 @@ export const useUserStore = create<UserState>((set) => ({
         Cookies.set('nickName', info.nickName, { expires });
         Cookies.set('avatar', info.avatar, { expires });
         set({ userInfo: info });
+    },
+
+    updateUserProfile: (patch) => {
+        set((state) => {
+            if (!state.userInfo) return state;
+            const next: UserInfo = { ...state.userInfo, ...patch };
+            const expires = new Date(next.expireAt);
+            Cookies.set('nickName', next.nickName, { expires });
+            Cookies.set('avatar', next.avatar, { expires });
+            return { userInfo: next };
+        });
     },
 
     clearUserInfo: () => {

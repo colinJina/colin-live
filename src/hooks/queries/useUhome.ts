@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { cancelFocusUser, focusUser, getUserInfo } from '../../api/uhome';
+import {
+    cancelFocusUser,
+    focusUser,
+    getUserInfo,
+    updateUserInfo,
+    type UpdateUserInfoParams,
+} from '../../api/uhome';
 import { doAction } from '../../api/video';
 import { toast } from '../../pages/header/message';
 
@@ -42,6 +48,27 @@ export const useCancelFocusUser = () => {
             queryClient.invalidateQueries({
                 queryKey: ['AuthorInfo', focusUserId],
             });
+        },
+    });
+};
+
+export const useUpdateUserInfo = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationKey: ['updateUserInfo'],
+        mutationFn: async (params: UpdateUserInfoParams) => {
+            const response = await updateUserInfo(params);
+            return response;
+        },
+        onSuccess: () => {
+            toast.success('更新成功');
+            // 由于这里没有 userId 入参，直接刷新所有 AuthorInfo（更稳妥）
+            queryClient.invalidateQueries({
+                queryKey: ['AuthorInfo'],
+            });
+        },
+        onError: (error: any) => {
+            toast.error(error?.msg || error?.message || '更新失败，请稍后重试');
         },
     });
 };

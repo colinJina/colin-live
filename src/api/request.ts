@@ -94,8 +94,7 @@ instance.interceptors.response.use(
 );
 
 const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | null> => {
-    const { url, params, dataType, responseType = 'json' } = config;
-
+    const { url, params, dataType, responseType = 'json', ...restConfig } = config;
     let contentType = contentTypeForm;
     let requestBody: any = new FormData();
     const method = config.method ? config.method.toUpperCase() : 'POST';
@@ -146,7 +145,8 @@ const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | 
                     config.uploadProgressCallback(event);
                 }
             },
-            ...config,
+            // 非 GET 请求的 params 已被消费并写入 body，这里不要再透传给 axios
+            ...restConfig,
             responseType: responseType as any,
         })
         .catch((error) => {

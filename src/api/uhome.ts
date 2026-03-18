@@ -55,3 +55,21 @@ export const cancelFocusUser = (focusUserId: string): Promise<ResponseVO<null>> 
         data: { focusUserId },
     }) as Promise<ResponseVO<null>>;
 };
+
+export interface UpdateUserInfoParams {
+    nickName: string;
+    avatar: string;
+    sex: number;
+    birthday?: string;
+    school?: string;
+    personIntroduction?: string;
+    noticeInfo?: string;
+}
+
+export const updateUserInfo = (params: UpdateUserInfoParams): Promise<ResponseVO<null> | null> => {
+    return request<null>({
+        url: '/uhome/updateUserInfo',
+        method: 'POST',
+        params,
+    }) as Promise<ResponseVO<null> | null>;
+};

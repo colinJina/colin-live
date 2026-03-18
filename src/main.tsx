@@ -52,6 +52,10 @@ createRoot(document.getElementById('root')!).render(
                     Message: {
                         contentBg: '#fff9fb',
                     },
+                    Modal: {
+                        paddingContentHorizontal: 0,
+                        paddingMD: 0,
+                    },
                 },
             }}
         >
