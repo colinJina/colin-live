@@ -1,5 +1,5 @@
 import request from './request';
-import type { ResponseVO } from './video';
+import type { PaginationResultVO, ResponseVO, VideoInfo } from './video';
 
 export interface UserInfoVO {
     userId?: string;
@@ -72,4 +72,30 @@ export const updateUserInfo = (params: UpdateUserInfoParams): Promise<ResponseVO
         method: 'POST',
         params,
     }) as Promise<ResponseVO<null> | null>;
+};
+
+export interface LoadUhomeVideoListParams {
+    userId: string;
+    /**
+     * type:int(optional,非空时每页10)
+     * 说明：后端决定 type 非空时的分页大小（这里我们把主页的默认值设为 0）。
+     */
+    type?: number;
+    pageNo?: number;
+    videoName?: string;
+    /**
+     * orderType:int(optional,0最新/1最多播放/2最多收藏)
+     */
+    orderType?: number;
+}
+
+/** 用户主页视频列表 */
+export const loadUhomeVideoList = (
+    params: LoadUhomeVideoListParams,
+): Promise<ResponseVO<PaginationResultVO<VideoInfo>> | null> => {
+    return request<PaginationResultVO<VideoInfo>>({
+        url: '/uhome/loadVideoList',
+        method: 'GET',
+        params,
+    }) as Promise<ResponseVO<PaginationResultVO<VideoInfo>> | null>;
 };

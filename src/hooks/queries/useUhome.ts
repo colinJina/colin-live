@@ -1,13 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+    type InfiniteData,
+    useInfiniteQuery,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query';
 import {
     cancelFocusUser,
     focusUser,
     getUserInfo,
+    loadUhomeVideoList,
     updateUserInfo,
     type UpdateUserInfoParams,
 } from '../../api/uhome';
 import { doAction } from '../../api/video';
+import type { PaginationResultVO, VideoInfo } from '../../api/video';
 import { toast } from '../../pages/header/message';
+import type { LoadUhomeVideoListParams } from '../../api/uhome';
 
 export const useGetAuthorInfo = (userId: string) => {
     return useQuery({
@@ -62,7 +71,6 @@ export const useUpdateUserInfo = () => {
         },
         onSuccess: () => {
             toast.success('更新成功');
-            // 由于这里没有 userId 入参，直接刷新所有 AuthorInfo（更稳妥）
             queryClient.invalidateQueries({
                 queryKey: ['AuthorInfo'],
             });
@@ -95,5 +103,67 @@ export const useVideoActionMutation = (videoId: string) => {
         onError: (error: any) => {
             toast.error(error.message || '操作失败，请稍后重试');
         },
+    });
+};
+
+type UseLoadUhomeVideoListArgs = {
+    enabled: boolean;
+    userId?: string;
+    type?: number;
+    pageNo?: number;
+    videoNameFuzzy?: string;
+    orderType?: number;
+};
+
+export const useLoadUhomeVideoList = ({
+    enabled,
+    userId,
+    videoNameFuzzy,
+    orderType,
+}: UseLoadUhomeVideoListArgs) => {
+    return useInfiniteQuery<
+        PaginationResultVO<VideoInfo>,
+        unknown,
+        InfiniteData<PaginationResultVO<VideoInfo>>,
+        readonly ['uhome', 'loadVideoList', LoadUhomeVideoListParams],
+        number
+    >({
+        queryKey: [
+            'uhome',
+            'loadVideoList',
+            {
+                userId: userId ?? '',
+                pageNo: undefined,
+                videoName: videoNameFuzzy,
+                orderType,
+            },
+        ],
+        enabled,
+        initialPageParam: 1,
+        queryFn: async ({ pageParam }) => {
+            const params: LoadUhomeVideoListParams = {
+                userId: userId ?? '',
+                pageNo: Number(pageParam),
+                videoName: videoNameFuzzy,
+                orderType,
+            };
+            const response = await loadUhomeVideoList(params);
+            return (
+                response?.data ?? {
+                    totalCount: 0,
+                    pageSize: 10,
+                    pageNo: Number(pageParam),
+                    pageTotal: 0,
+                    list: [],
+                }
+            );
+        },
+        getNextPageParam: (lastPage) => {
+            if (!lastPage) return undefined;
+            if (!lastPage.pageTotal) return undefined;
+            if (lastPage.pageNo >= lastPage.pageTotal) return undefined;
+            return lastPage.pageNo + 1;
+        },
+        refetchOnWindowFocus: false,
     });
 };

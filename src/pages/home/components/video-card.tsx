@@ -4,23 +4,30 @@ import UpIcon from '../../../assets/icon/up-icon.svg?react';
 import PlayerIcon from '../../../assets/icon/player-icon.svg?react';
 import DanmuIcon from '../../../assets/icon/danmu-icon.svg?react';
 import { useNavigate } from 'react-router-dom';
+
+export type VideoCardVariant = 'feed' | 'profile';
+
 interface VideoCardProps {
     video: VideoInfo;
     className?: string;
+    variant?: VideoCardVariant;
 }
-export function VideoCard({ video, className }: VideoCardProps) {
+
+export function VideoCard({ video, className, variant = 'feed' }: VideoCardProps) {
     const navigate = useNavigate();
+    const isProfile = variant === 'profile';
+
     return (
         <div
             className={cn(
-                'group  cursor-pointer relative rounded-2xl bg-white shadow-[0_10px_30px_rgba(24,25,28,0.08)] ring-1 ring-black/5 transition-transform duration-200 hover:-translate-y-0.5',
+                'group cursor-pointer relative rounded-2xl bg-white shadow-[0_10px_30px_rgba(24,25,28,0.08)] ring-1 ring-black/5 transition-transform duration-200 hover:-translate-y-0.5',
                 className,
             )}
             onClick={() => {
                 navigate(`/video/${video.videoId}`);
             }}
         >
-            <div className="relative aspect-video w-full  overflow-hidden ">
+            <div className="relative aspect-video w-full overflow-hidden">
                 <img
                     src={getAvatarSrc(video.videoCover)}
                     alt=""
@@ -42,15 +49,23 @@ export function VideoCard({ video, className }: VideoCardProps) {
                     <div className="font-medium">{formatDuration(video.duration)}</div>
                 </div>
             </div>
+
             <div className="p-3">
                 <div className="line-clamp-2 text-[13px] font-medium text-[#18191c] truncate">
                     {video.videoName}
                 </div>
+
                 <div className="flex mt-1 gap-1 text-[12px] text-[#9499a0]">
-                    <UpIcon className="size-5"></UpIcon>
-                    <span>{video.nickName ?? '神秘up主~'}</span>
-                    <span>{'·'}</span>
-                    <span>{formatVideoTime(video.createTime as string)}</span>
+                    {!isProfile && (
+                        <>
+                            <UpIcon className="size-5" />
+                            <span>{video.nickName ?? '神秘up主~'}</span>
+                            <span>{'·'}</span>
+                        </>
+                    )}
+                    <span className={isProfile ? 'mt-0.5' : ''}>
+                        {formatVideoTime(video.createTime as string)}
+                    </span>
                 </div>
             </div>
         </div>

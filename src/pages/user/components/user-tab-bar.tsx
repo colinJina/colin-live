@@ -14,7 +14,6 @@ export interface UserTabBarProps {
 }
 
 const TABS: { key: UserMainTabKey; label: string }[] = [
-    { key: 'home', label: '主页' },
     { key: 'contribute', label: '投稿' },
     { key: 'videos', label: '视频列表' },
     { key: 'collect', label: '收藏' },
@@ -57,23 +56,25 @@ export default function UserTabBar({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-1 rounded-xl bg-[#fff4f8] p-1">
-                        {SORTS.map((s) => (
-                            <button
-                                key={s.key}
-                                type="button"
-                                onClick={() => onChangeSort(s.key)}
-                                className={cn(
-                                    'rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-all',
-                                    sortKey === s.key
-                                        ? 'bg-white text-[#fb7299] shadow-[0_4px_12px_rgba(251,114,153,0.15)]'
-                                        : 'text-[#8a5065]/70 hover:text-[#6d3b4d]',
-                                )}
-                            >
-                                {s.label}
-                            </button>
-                        ))}
-                    </div>
+                    {activeTab === 'contribute' && (
+                        <div className="flex items-center gap-1 rounded-xl bg-[#fff4f8] p-1">
+                            {SORTS.map((s) => (
+                                <button
+                                    key={s.key}
+                                    type="button"
+                                    onClick={() => onChangeSort(s.key)}
+                                    className={cn(
+                                        'rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-all',
+                                        sortKey === s.key
+                                            ? 'bg-white text-[#fb7299] shadow-[0_4px_12px_rgba(251,114,153,0.15)]'
+                                            : 'text-[#8a5065]/70 hover:text-[#6d3b4d]',
+                                    )}
+                                >
+                                    {s.label}
+                                </button>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="hidden h-6 w-[1px] bg-[#ffd6e3]/60 lg:block" />
 
