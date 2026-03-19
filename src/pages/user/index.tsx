@@ -3,7 +3,11 @@ import { useMemo, useState } from 'react';
 import UserTabBar, { type UserMainTabKey } from './components/user-tab-bar';
 import UserProfileHeader from './components/user-profile-header';
 import UserVideoSection, { type VideoSortKey } from './components/user-video-section';
-import { useGetAuthorInfo, useLoadUhomeVideoList } from '../../hooks/queries/useUhome';
+import {
+    useGetAuthorInfo,
+    useLoadUhomeVideoList,
+    useLoadUserCollection,
+} from '../../hooks/queries/useUhome';
 import { useParams } from 'react-router-dom';
 
 export default function UserProfile() {
@@ -15,15 +19,47 @@ export default function UserProfile() {
     const resolvedUserId = userId ?? '';
     const { data: userProfielInfo } = useGetAuthorInfo(resolvedUserId);
     const orderType = sortKey === 'latest' ? 0 : sortKey === 'most_played' ? 1 : 2;
-    const { data, isLoading, isError, isFetchingNextPage, hasNextPage, fetchNextPage, refetch } =
-        useLoadUhomeVideoList({
-            enabled: Boolean(resolvedUserId),
-            userId: resolvedUserId,
-            orderType,
-            videoNameFuzzy: appliedVideoNameFuzzy || undefined,
-        });
 
-    const videos = useMemo(() => data?.pages?.flatMap((p) => p.list) ?? [], [data]);
+    const {
+        data: videoListData,
+        isLoading: isVideoListLoading,
+        isError: isVideoListError,
+        isFetchingNextPage: isVideoListFetchingNextPage,
+        hasNextPage: isVideoListHasNextPage,
+        fetchNextPage: fetchVideoListNextPage,
+        refetch: refetchVideoList,
+    } = useLoadUhomeVideoList({
+        enabled: Boolean(resolvedUserId) && activeTab !== 'collect',
+        userId: resolvedUserId,
+        orderType,
+        videoNameFuzzy: appliedVideoNameFuzzy || undefined,
+    });
+
+    const {
+        data: collectionData,
+        isLoading: isCollectionLoading,
+        isError: isCollectionError,
+        isFetchingNextPage: isCollectionFetchingNextPage,
+        hasNextPage: isCollectionHasNextPage,
+        fetchNextPage: fetchCollectionNextPage,
+        refetch: refetchCollection,
+    } = useLoadUserCollection({
+        enabled: Boolean(resolvedUserId) && activeTab === 'collect',
+        userId: resolvedUserId,
+    });
+
+    const videos = useMemo(() => {
+        if (activeTab === 'collect') {
+            return collectionData?.pages?.flatMap((p) => p.list) ?? [];
+        }
+        return videoListData?.pages?.flatMap((p) => p.list) ?? [];
+    }, [activeTab, collectionData, videoListData]);
+
+    const isLoading = activeTab === 'collect' ? isCollectionLoading : isVideoListLoading;
+    const isError = activeTab === 'collect' ? isCollectionError : isVideoListError;
+    const isFetchingNextPage =
+        activeTab === 'collect' ? isCollectionFetchingNextPage : isVideoListFetchingNextPage;
+    const hasNextPage = activeTab === 'collect' ? isCollectionHasNextPage : isVideoListHasNextPage;
 
     return (
         <div className="min-h-[calc(100vh-72px)] bg-[linear-gradient(160deg,#fff8fb_0%,#fff_45%,#fff4f9_100%)]">
@@ -48,11 +84,20 @@ export default function UserProfile() {
                         isFetchingNextPage={isFetchingNextPage}
                         hasNextPage={hasNextPage}
                         fetchNextPage={() => {
-                            void fetchNextPage();
+                            if (activeTab === 'collect') {
+                                void fetchCollectionNextPage();
+                            } else {
+                                void fetchVideoListNextPage();
+                            }
                         }}
                         onRetry={() => {
-                            void refetch();
+                            if (activeTab === 'collect') {
+                                void refetchCollection();
+                            } else {
+                                void refetchVideoList();
+                            }
                         }}
+                        emptyStateTitle={activeTab === 'collect' ? '还没有收藏视频哦~~' : undefined}
                     />
                 </div>
             </div>

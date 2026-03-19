@@ -10,8 +10,11 @@ import {
     focusUser,
     getUserInfo,
     loadUhomeVideoList,
+    loadUserCollection,
     updateUserInfo,
     type UpdateUserInfoParams,
+    type LoadUserCollectionParams,
+    type UserCollectionActionVO,
 } from '../../api/uhome';
 import { doAction } from '../../api/video';
 import type { PaginationResultVO, VideoInfo } from '../../api/video';
@@ -157,6 +160,63 @@ export const useLoadUhomeVideoList = ({
                     list: [],
                 }
             );
+        },
+        getNextPageParam: (lastPage) => {
+            if (!lastPage) return undefined;
+            if (!lastPage.pageTotal) return undefined;
+            if (lastPage.pageNo >= lastPage.pageTotal) return undefined;
+            return lastPage.pageNo + 1;
+        },
+        refetchOnWindowFocus: false,
+    });
+};
+
+export const useLoadUserCollection = ({
+    enabled,
+    userId,
+}: {
+    enabled: boolean;
+    userId?: string;
+}) => {
+    return useInfiniteQuery<
+        PaginationResultVO<VideoInfo>,
+        unknown,
+        InfiniteData<PaginationResultVO<VideoInfo>>,
+        readonly ['uhome', 'loadUserCollection', LoadUserCollectionParams],
+        number
+    >({
+        queryKey: [
+            'uhome',
+            'loadUserCollection',
+            {
+                userId: userId ?? '',
+                pageNo: undefined,
+            },
+        ],
+        enabled,
+        initialPageParam: 1,
+        queryFn: async ({ pageParam }) => {
+            const params: LoadUserCollectionParams = {
+                userId: userId ?? '',
+                pageNo: Number(pageParam),
+            };
+            const response = await loadUserCollection(params);
+            const apiData = response?.data;
+            return {
+                totalCount: apiData?.totalCount ?? 0,
+                pageSize: apiData?.pageSize ?? 15,
+                pageNo: apiData?.pageNo ?? Number(pageParam),
+                pageTotal: apiData?.pageTotal ?? 0,
+                list: (apiData?.list ?? []).map((item: UserCollectionActionVO) => ({
+                    videoId: item.videoId ?? '',
+                    videoCover: item.videoCover,
+                    videoName: item.videoName,
+                    // 集合列表返回 actionTime，用于 VideoCard 底部时间展示
+                    createTime: item.actionTime,
+                    // videoUserId 不参与当前列表展示，但保留给后续交互使用
+                    userId: item.videoUserId,
+                })),
+            };
         },
         getNextPageParam: (lastPage) => {
             if (!lastPage) return undefined;

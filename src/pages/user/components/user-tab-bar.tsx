@@ -78,11 +78,13 @@ export default function UserTabBar({
 
                     <div className="hidden h-6 w-[1px] bg-[#ffd6e3]/60 lg:block" />
 
-                    <SearchBox
-                        value={searchValue}
-                        onChange={onChangeSearchValue}
-                        onSearch={onSearch}
-                    />
+                    {activeTab !== 'collect' && (
+                        <SearchBox
+                            value={searchValue}
+                            onChange={onChangeSearchValue}
+                            onSearch={onSearch}
+                        />
+                    )}
                 </div>
             </div>
         </div>

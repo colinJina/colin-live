@@ -15,6 +15,7 @@ export interface UserVideoSectionProps {
     hasNextPage?: boolean;
     fetchNextPage?: () => void;
     onRetry?: () => void;
+    emptyStateTitle?: string;
 }
 
 export default function UserVideoSection({
@@ -25,6 +26,7 @@ export default function UserVideoSection({
     hasNextPage = false,
     fetchNextPage,
     onRetry,
+    emptyStateTitle,
 }: UserVideoSectionProps) {
     const list = videos ?? [];
     const isEmpty = list.length === 0;
@@ -70,7 +72,7 @@ export default function UserVideoSection({
                     <Spin size="large" />
                 </div>
             ) : isEmpty ? (
-                <EmptyState />
+                <EmptyState title={emptyStateTitle} />
             ) : (
                 <>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

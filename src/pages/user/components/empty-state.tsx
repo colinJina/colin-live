@@ -20,9 +20,6 @@ export default function EmptyState({
                 <EmptyBoxIcon className="h-8 w-8 text-[#fb7299]" />
             </div>
             <div className="text-[14px] font-semibold text-[#6d3b4d]">{title}</div>
-            <div className="mt-2 text-[12px] text-[#b07086]">
-                试试上方搜索，或者换个排序方式看看
-            </div>
         </div>
     );
 }

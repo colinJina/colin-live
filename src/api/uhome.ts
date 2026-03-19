@@ -99,3 +99,30 @@ export const loadUhomeVideoList = (
         params,
     }) as Promise<ResponseVO<PaginationResultVO<VideoInfo>> | null>;
 };
+
+export interface UserCollectionActionVO {
+    actionId?: number;
+    videoId?: string;
+    videoUserId?: string;
+    commentId?: number;
+    actionType?: number;
+    actionTime?: string;
+    videoCover?: string;
+    videoName?: string;
+}
+
+export interface LoadUserCollectionParams {
+    userId: string;
+    pageNo?: number;
+}
+
+/** 用户收藏视频列表 */
+export const loadUserCollection = (
+    params: LoadUserCollectionParams,
+): Promise<ResponseVO<PaginationResultVO<UserCollectionActionVO>> | null> => {
+    return request<PaginationResultVO<UserCollectionActionVO>>({
+        url: '/uhome/loadUserCollection',
+        method: 'GET',
+        params,
+    }) as Promise<ResponseVO<PaginationResultVO<UserCollectionActionVO>> | null>;
+};
