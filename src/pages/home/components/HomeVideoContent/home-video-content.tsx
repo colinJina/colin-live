@@ -1,6 +1,7 @@
 import type { VideoInfo } from '../../../../api/video';
 import { useLoadRecommendVideo } from '../../../../hooks/queries/useVideo';
 import CategoryModule from '../category-module';
+
 import CarouselVideoCard from './carousel-video-card';
 import HomeVideoCard from './home-video-card';
 import TopRecommendVideoCard from './top-recommend-video-card';

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
-import { toast } from '../../pages/header/message';
+
 import { preUploadVideo, uploadVideoChunk } from '../../api/upload';
+import { toast } from '../../pages/header/message';
 
 const CHUNK_SIZE = 2 * 1024 * 1024; // 2MB
 const MAX_UPLOADING = 3;

@@ -5,6 +5,7 @@ import {
     useQuery,
     useQueryClient,
 } from '@tanstack/react-query';
+
 import {
     cancelFocusUser,
     focusUser,
@@ -16,10 +17,10 @@ import {
     type LoadUserCollectionParams,
     type UserCollectionActionVO,
 } from '../../api/uhome';
+import type { LoadUhomeVideoListParams } from '../../api/uhome';
 import { doAction } from '../../api/video';
 import type { PaginationResultVO, VideoInfo } from '../../api/video';
 import { toast } from '../../pages/header/message';
-import type { LoadUhomeVideoListParams } from '../../api/uhome';
 
 export const useGetAuthorInfo = (userId: string) => {
     return useQuery({

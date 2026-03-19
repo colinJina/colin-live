@@ -1,6 +1,6 @@
+import dayjs from 'dayjs';
 import ReactECharts from 'echarts-for-react';
 import { useMemo, useState } from 'react';
-import dayjs from 'dayjs';
 
 import {
     useActualTimeStatisticsInfo,

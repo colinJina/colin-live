@@ -1,7 +1,7 @@
-import type { FC } from 'react';
-import type { VideoInfo } from '../../../../api/video';
-
 import { Spin } from 'antd';
+import type { FC } from 'react';
+
+import type { VideoInfo } from '../../../../api/video';
 import { VideoCard } from '../video-card';
 
 export type TopRecommendVideoCardProps = {

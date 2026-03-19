@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { useLoadVideoByCategory } from '../../../hooks/queries/useVideo';
 import { cn } from '../../../utils';
+
 import { VideoCard } from './video-card';
 
 export type DetailVideoProps = {

@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { cn, getAvatarSrc } from '../../utils';
-import defaultAvatar from '@/assets/icon/user.svg';
+
 import useUserAuth from '../../hooks/queries/useUserAuth';
+import { cn, getAvatarSrc } from '../../utils';
+
+import defaultAvatar from '@/assets/icon/user.svg';
 
 const USER_MENU_ITEMS = ['个人中心', '投稿管理', '退出登录'] as const;
 

@@ -17,12 +17,13 @@ import {
 import { useLoginModal } from '../../provider/login-modal-provider';
 import { useUserStore } from '../../stores/useUserStore';
 import { toast } from '../header/message';
+
 import UserActionPanel from './components/user-action-panel';
 import { VideoAuthorCard } from './components/video-author-card';
+import VideoCommentSection from './components/video-comment-section';
 import { VideoDanmuList } from './components/video-danmu-list';
 import { VideoPlaylistPanel } from './components/video-playlist-panel';
 import { VideoSummaryCard } from './components/video-summary-card';
-import VideoCommentSection from './components/video-comment-section';
 
 type DanmuSendMode = 1 | 4 | 5;
 type DanmukuPlugin = {

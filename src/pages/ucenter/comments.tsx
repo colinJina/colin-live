@@ -1,12 +1,12 @@
-import { EmptyPanel } from './uArchive/archive-components';
 import { Popconfirm, Spin } from 'antd';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import type { VideoComment } from '../../api/video';
+import DeleteIcon from '../../assets/icon/comment-delete.svg?react';
 import { useDelUcenterComment, useLoadUcenterComments } from '../../hooks/queries/useVideo';
 import { formatVideoTime, getAvatarSrc } from '../../utils';
 
-import DeleteIcon from '../../assets/icon/comment-delete.svg?react';
+import { EmptyPanel } from './uArchive/archive-components';
 
 export default function UcenterComments() {
     const {

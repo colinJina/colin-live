@@ -1,9 +1,10 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import Zhuzhan from '../../../assets/icon/zhuzhan.svg?react';
+
 import UcenterArchive from '../../../assets/icon/ucenter-archive.svg?react';
-import UcenterUpload from '../../../assets/icon/ucenter-upload.svg?react';
-import UcenterDanmuku from '../../../assets/icon/ucenter-danmuku.svg?react';
 import UcenterComment from '../../../assets/icon/ucenter-comment.svg?react';
+import UcenterDanmuku from '../../../assets/icon/ucenter-danmuku.svg?react';
+import UcenterUpload from '../../../assets/icon/ucenter-upload.svg?react';
+import Zhuzhan from '../../../assets/icon/zhuzhan.svg?react';
 import UserHoverCard from '../../user/user-hover-card';
 
 interface MenuItem {

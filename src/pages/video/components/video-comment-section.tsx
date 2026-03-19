@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react';
 import {
     SmileOutlined,
     PictureOutlined,
@@ -9,18 +8,21 @@ import {
     CloseOutlined,
 } from '@ant-design/icons';
 import { Avatar, Button, Input, Dropdown, Tooltip, Spin, Popover, Image } from 'antd';
-import { toast } from '../../header/message';
+import React, { useState, useEffect, useRef } from 'react';
+
+import type { CommentData } from '../../../api/video';
 import {
     useComments,
     useDoAction,
     usePostComment,
     useUploadImage,
 } from '../../../hooks/queries/useVideo';
-import type { CommentData } from '../../../api/video';
-import { formatVideoTime, getAvatarSrc } from '../../../utils';
-import { useUserStore } from '../../../stores/useUserStore';
-import defaultAvatar from '@/assets/icon/user.svg';
 import { useLoginModal } from '../../../provider/login-modal-provider';
+import { useUserStore } from '../../../stores/useUserStore';
+import { formatVideoTime, getAvatarSrc } from '../../../utils';
+import { toast } from '../../header/message';
+
+import defaultAvatar from '@/assets/icon/user.svg';
 
 const EMOJI_LIST = [
     '😀',

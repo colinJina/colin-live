@@ -1,12 +1,15 @@
 import { Button } from 'antd';
-import { toast } from '../../header/message';
-import { getAvatarSrc } from '../../../utils';
-import { useLoginModal } from '../../../provider/login-modal-provider';
-import defaultAvatar from '@/assets/icon/user.svg';
-import type { UserInfoVO } from '../../../api/uhome';
-import { useUserStore } from '../../../stores/useUserStore';
-import { useCancelFocusUser, useFocusUser } from '../../../hooks/queries/useUhome';
 import { useEffect } from 'react';
+
+import type { UserInfoVO } from '../../../api/uhome';
+import { useCancelFocusUser, useFocusUser } from '../../../hooks/queries/useUhome';
+import { useLoginModal } from '../../../provider/login-modal-provider';
+import { useUserStore } from '../../../stores/useUserStore';
+import { getAvatarSrc } from '../../../utils';
+import { toast } from '../../header/message';
+
+import defaultAvatar from '@/assets/icon/user.svg';
+
 type VideoAuthorCardProps = {
     authorProfile: UserInfoVO;
     onVisitHome: () => void;

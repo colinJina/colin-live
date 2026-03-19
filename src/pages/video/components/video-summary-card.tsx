@@ -1,6 +1,6 @@
-import PlayerIcon from '../../../assets/icon/player-icon.svg?react';
-import DanmuIcon from '../../../assets/icon/danmu-icon.svg?react';
 import type { VideoInfo, VideoInfoFile } from '../../../api/video';
+import DanmuIcon from '../../../assets/icon/danmu-icon.svg?react';
+import PlayerIcon from '../../../assets/icon/player-icon.svg?react';
 import { formatVideoTime } from '../../../utils';
 
 type VideoSummaryCardProps = {

@@ -1,9 +1,10 @@
-import type { VideoInfo } from '../../../api/video';
-import { cn, formatDuration, formatVideoTime, getAvatarSrc } from '../../../utils';
-import UpIcon from '../../../assets/icon/up-icon.svg?react';
-import PlayerIcon from '../../../assets/icon/player-icon.svg?react';
-import DanmuIcon from '../../../assets/icon/danmu-icon.svg?react';
 import { useNavigate } from 'react-router-dom';
+
+import type { VideoInfo } from '../../../api/video';
+import DanmuIcon from '../../../assets/icon/danmu-icon.svg?react';
+import PlayerIcon from '../../../assets/icon/player-icon.svg?react';
+import UpIcon from '../../../assets/icon/up-icon.svg?react';
+import { cn, formatDuration, formatVideoTime, getAvatarSrc } from '../../../utils';
 
 export type VideoCardVariant = 'feed' | 'profile';
 

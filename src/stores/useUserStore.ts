@@ -11,13 +11,15 @@ interface UserInfo {
 
 interface UserState {
     userInfo: UserInfo | null;
+    noReadCount: number;
     setUserInfo: (info: UserInfo) => void;
     updateUserProfile: (patch: Pick<UserInfo, 'nickName' | 'avatar'>) => void;
+    setNoReadCount: (count: number) => void;
+    decreaseNoReadCount: (count: number) => void;
     clearUserInfo: () => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
-    // 初始化时从 Cookie 恢复 token（刷新页面不丢失）
     userInfo: (() => {
         const token = Cookies.get('token');
         const expireAt = Cookies.get('expireAt');
@@ -33,6 +35,8 @@ export const useUserStore = create<UserState>((set) => ({
         return null;
     })(),
 
+    noReadCount: 0,
+
     setUserInfo: (info: UserInfo) => {
         const expires = new Date(info.expireAt);
         // 同步写入 Cookie 持久化
@@ -42,6 +46,14 @@ export const useUserStore = create<UserState>((set) => ({
         Cookies.set('nickName', info.nickName, { expires });
         Cookies.set('avatar', info.avatar, { expires });
         set({ userInfo: info });
+    },
+
+    setNoReadCount: (count) => {
+        set({ noReadCount: count });
+    },
+
+    decreaseNoReadCount: (count) => {
+        set((state) => ({ noReadCount: Math.max(0, state.noReadCount - count) }));
     },
 
     updateUserProfile: (patch) => {
@@ -61,6 +73,6 @@ export const useUserStore = create<UserState>((set) => ({
         Cookies.remove('userId');
         Cookies.remove('nickName');
         Cookies.remove('avatar');
-        set({ userInfo: null });
+        set({ userInfo: null, noReadCount: 0 });
     },
 }));

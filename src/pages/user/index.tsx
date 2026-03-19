@@ -1,14 +1,15 @@
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-import UserTabBar, { type UserMainTabKey } from './components/user-tab-bar';
-import UserProfileHeader from './components/user-profile-header';
-import UserVideoSection, { type VideoSortKey } from './components/user-video-section';
 import {
     useGetAuthorInfo,
     useLoadUhomeVideoList,
     useLoadUserCollection,
 } from '../../hooks/queries/useUhome';
-import { useParams } from 'react-router-dom';
+
+import UserProfileHeader from './components/user-profile-header';
+import UserTabBar, { type UserMainTabKey } from './components/user-tab-bar';
+import UserVideoSection, { type VideoSortKey } from './components/user-video-section';
 
 export default function UserProfile() {
     const [activeTab, setActiveTab] = useState<UserMainTabKey>('contribute');

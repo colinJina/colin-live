@@ -1,14 +1,16 @@
-import { Modal, Form, Input, Radio, DatePicker, Button, Upload } from 'antd';
 import { CloseOutlined, CameraFilled } from '@ant-design/icons';
+import { Modal, Form, Input, Radio, DatePicker, Button, Upload } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useMemo } from 'react';
+
 import type { UserInfoVO } from '../../../api/uhome';
-import { getAvatarSrc } from '../../../utils';
-import defaultAvatar from '@/assets/icon/user.svg';
 import { useUpdateUserInfo } from '../../../hooks/queries/useUhome';
-import { toast } from '../../header/message';
 import { useUploadImage } from '../../../hooks/queries/useVideo';
 import { useUserStore } from '../../../stores/useUserStore';
+import { getAvatarSrc } from '../../../utils';
+import { toast } from '../../header/message';
+
+import defaultAvatar from '@/assets/icon/user.svg';
 
 interface UserProfileModalProps {
     open: boolean;

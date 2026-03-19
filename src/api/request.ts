@@ -7,9 +7,8 @@ import type {
 } from 'axios';
 import Cookies from 'js-cookie';
 
-import { useUserStore } from '../stores/useUserStore';
-
 import { toast } from '../pages/header/message';
+import { useUserStore } from '../stores/useUserStore';
 
 interface ResponseVO<T = unknown> {
     code: number;

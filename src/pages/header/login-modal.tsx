@@ -7,10 +7,12 @@ import {
 } from '@ant-design/icons';
 import { Button, ConfigProvider, Form, Input, Modal, Tabs, Tooltip } from 'antd';
 import { useState } from 'react';
-import { toast } from './message';
+
 import { useCheckCode, useLoginAccount, useRegisterAccount } from '../../hooks/queries/useAuth';
 import { useUserStore } from '../../stores/useUserStore';
 import { md5 } from '../../utils';
+
+import { toast } from './message';
 
 interface LoginModalProps {
     isOpen: boolean;

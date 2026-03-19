@@ -1,8 +1,11 @@
 import type { ComponentType, KeyboardEvent, SVGProps } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { getNoReadCount } from '../../api/message';
 import Zhuzhan from '../../assets/icon/colinLive.svg?react';
 import HeaderUploadButton from '../../component/headerUploadButton';
+import { useUserStore } from '../../stores/useUserStore';
 import UserHoverCard from '../user/user-hover-card';
 
 import Collect from '@/assets/icon/collect.svg?react';
@@ -33,6 +36,38 @@ const SearchIcon = ({ className }: { className?: string }) => (
 
 export default function LayoutHeader() {
     const navigate = useNavigate();
+
+    const token = useUserStore((state) => state.userInfo?.token);
+    const noReadCount = useUserStore((state) => state.noReadCount);
+    const setNoReadCount = useUserStore((state) => state.setNoReadCount);
+
+    useEffect(() => {
+        if (!token) {
+            setNoReadCount(0);
+            return;
+        }
+
+        let cancelled = false;
+
+        const run = async () => {
+            try {
+                const res = await getNoReadCount({ showError: false });
+                const count = Number(res?.data ?? 0);
+                if (!cancelled) {
+                    setNoReadCount(Number.isFinite(count) ? count : 0);
+                }
+            } catch {
+                if (!cancelled) setNoReadCount(0);
+            }
+        };
+
+        run();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [token, setNoReadCount]);
+
     const handleSearch = (value: string) => {
         const keyword = value.trim();
         if (!keyword) return;
@@ -98,7 +133,13 @@ export default function LayoutHeader() {
                         </div>
 
                         {HEADER_LINKS.map(({ Icon, label, path }) => (
-                            <NavIcon key={label} Icon={Icon} label={label} path={path} />
+                            <NavIcon
+                                key={label}
+                                Icon={Icon}
+                                label={label}
+                                path={path}
+                                showBadge={label === '消息' && noReadCount > 0}
+                            />
                         ))}
 
                         <div className="cursor-pointer transition-all hover:opacity-90 active:scale-95">
@@ -138,18 +179,23 @@ function NavIcon({
     Icon,
     label,
     path,
+    showBadge,
 }: {
     Icon: ComponentType<SVGProps<SVGSVGElement>>;
     label: string;
     path: string;
+    showBadge?: boolean;
 }) {
     const navigate = useNavigate();
 
     return (
         <div
             onClick={() => navigate(path)}
-            className="group/icon flex cursor-pointer flex-col items-center justify-center rounded-[20px] px-2.5 py-2 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_26px_rgba(251,114,153,0.12)]"
+            className="relative group/icon flex cursor-pointer flex-col items-center justify-center rounded-[20px] px-2.5 py-2 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_26px_rgba(251,114,153,0.12)]"
         >
+            {showBadge && (
+                <span className="pointer-events-none absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-[#fb7299] shadow-[0_0_10px_rgba(251,114,153,0.6)]" />
+            )}
             <Icon className="h-5 w-5 text-[#9f4b67] transition-transform duration-300 group-hover/icon:-translate-y-0.5 group-hover/icon:text-[var(--bili-pink-strong)]" />
             <span className="mt-1 text-[11px] font-medium text-[#8a5065] transition-colors group-hover/icon:text-[var(--bili-pink-strong)]">
                 {label}

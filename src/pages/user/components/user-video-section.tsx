@@ -1,9 +1,10 @@
-import EmptyState from './empty-state';
 import { Button, Spin } from 'antd';
 import { useEffect, useRef } from 'react';
 
 import type { VideoInfo } from '../../../api/video';
 import { VideoCard } from '../../home/components/video-card';
+
+import EmptyState from './empty-state';
 
 export type VideoSortKey = 'latest' | 'most_played' | 'most_collected';
 

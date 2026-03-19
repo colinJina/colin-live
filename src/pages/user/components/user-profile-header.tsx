@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
 
-import defaultAvatar from '@/assets/icon/user.svg';
-import UserProfileModal from './user-profile-modal';
-import StatisticsBar from './statistics-bar';
-import { getAvatarSrc } from '../../../utils';
 import type { UserInfoVO } from '../../../api/uhome';
+import { getAvatarSrc } from '../../../utils';
+
+import StatisticsBar from './statistics-bar';
+import UserProfileModal from './user-profile-modal';
+
+import defaultAvatar from '@/assets/icon/user.svg';
 
 export interface UserProfileHeaderProps {
     userInfo?: UserInfoVO;
