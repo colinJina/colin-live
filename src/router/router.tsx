@@ -16,6 +16,7 @@ import UcenterUpload from '../pages/ucenter/ucenter-upload';
 import UhomeLayout from '../pages/ucenter/uhome';
 import UserProfile from '../pages/user';
 import VideoDetailCard from '../pages/video/video-detail-card';
+import History from '../pages/home/history';
 
 const routes = createRoutesFromElements(
     <>
@@ -27,6 +28,7 @@ const routes = createRoutesFromElements(
             {/* <Route path="/v/hot" element={<Hot />} /> */}
             <Route path="/v/:categoryCode/:subCategoryCode?" element={<BreadcrumbCategory />} />
             <Route path="/user/:userId" element={<UserProfile />} />
+            <Route path="/history" element={<History />} />
             <Route path="/message" element={<MessageLayout />}>
                 <Route index element={<Navigate to="sys" replace />} />
                 <Route path="sys" element={<SystemMessage />} />
