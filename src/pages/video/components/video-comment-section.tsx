@@ -494,8 +494,6 @@ export default function VideoCommentSection({ videoId }: VideoCommentSectionProp
     const loadMoreRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        console.log(comments);
-
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && hasMore && !isFetchingNextPage) fetchNextPage();

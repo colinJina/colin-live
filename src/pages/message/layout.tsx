@@ -104,17 +104,10 @@ export default function MessageLayout() {
                                     {item.label}
                                 </span>
 
-                                {/* 右侧修饰小图标 */}
-                                <div
-                                    className={cn(
-                                        'h-1.5 w-1.5 rounded-full transition-all duration-300',
-                                        showRedDot
-                                            ? 'bg-[#ff4d4f] scale-100 opacity-100 shadow-[0_0_6px_#ff4d4f]'
-                                            : isActive
-                                              ? 'bg-[#fb7299] scale-100 opacity-100 shadow-[0_0_6px_#fb7299]'
-                                              : 'bg-[#fb7299] scale-50 opacity-0 group-hover:opacity-30',
-                                    )}
-                                />
+                                {/* 未读消息小红点 */}
+                                {showRedDot && (
+                                    <div className="h-1.5 w-1.5 rounded-full bg-[#ff4d4f] shadow-[0_0_6px_#ff4d4f]" />
+                                )}
                             </NavLink>
                         );
                     })}

@@ -1,6 +1,4 @@
 import { Button } from 'antd';
-import { useEffect } from 'react';
-
 import type { UserInfoVO } from '../../../api/uhome';
 import { useCancelFocusUser, useFocusUser } from '../../../hooks/queries/useUhome';
 import { useLoginModal } from '../../../provider/login-modal-provider';
@@ -17,9 +15,6 @@ type VideoAuthorCardProps = {
 const renderCount = (value?: number) => (typeof value === 'number' ? value : '--');
 
 export function VideoAuthorCard({ authorProfile, onVisitHome }: VideoAuthorCardProps) {
-    useEffect(() => {
-        console.log(authorProfile);
-    });
     const { mutate: focus, isPending: isFocusing } = useFocusUser();
     const { mutate: cancelFocus, isPending: isCanceling } = useCancelFocusUser();
     const userInfo = useUserStore((state) => state.userInfo);
