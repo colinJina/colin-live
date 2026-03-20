@@ -27,7 +27,6 @@ export function getAvatarSrc(avatar: string | undefined | null) {
     } catch {
         // ignore
     }
-    // 避免把路径分隔符 '/' 编成 %2F（部分后端/网关会拒绝 encoded slash）
     const encoded = clean
         .split('/')
         .filter(Boolean)

@@ -12,6 +12,7 @@ import { useState, useMemo } from 'react';
 import { useAllCategory } from '../../hooks/queries/useCategory';
 import { usePostVideo, useUploadImage } from '../../hooks/queries/useVideo';
 import { useVideoUpload } from '../../hooks/queries/useVideoUpload';
+import { getAvatarSrc } from '../../utils';
 
 function EmptyUploadPanel({ handleCustomRequest, uploadingCount }: any) {
     const props: UploadProps = {
@@ -239,7 +240,7 @@ export default function UcenterUpload() {
                                             >
                                                 {coverUrl ? (
                                                     <img
-                                                        src={coverUrl}
+                                                        src={getAvatarSrc(coverUrl)}
                                                         alt="cover"
                                                         style={{
                                                             width: '100%',

@@ -93,9 +93,7 @@ instance.interceptors.response.use(
 );
 
 const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | null> => {
-    const { url, params, dataType, responseType = 'json', ...restConfig } = config;
-    let contentType = contentTypeForm;
-    let requestBody: any = new FormData();
+    const { url, params, data, dataType = 'form', responseType = 'json', ...restConfig } = config;
     const method = config.method ? config.method.toUpperCase() : 'POST';
 
     if (method === 'GET') {
@@ -118,33 +116,58 @@ const request = <T = any>(config: CustomRequestConfig): Promise<ResponseVO<T> | 
             }) as Promise<ResponseVO<T> | null>;
     }
 
-    if (params) {
-        for (const key in params) {
-            requestBody.append(key, params[key] === undefined ? '' : params[key]);
+    const hasExplicitBody = data !== undefined;
+    const axiosParams = hasExplicitBody ? params : undefined;
+
+    let requestBody: any = hasExplicitBody ? data : params;
+
+    const headers: Record<string, string> = {
+        'X-Requested-With': 'XMLHttpRequest',
+    };
+
+    if (dataType === 'json') {
+        headers['Content-Type'] = contentTypeJson;
+        if (requestBody === undefined) {
+            requestBody = {};
+        }
+    } else {
+        const isFormData = typeof FormData !== 'undefined' && requestBody instanceof FormData;
+
+        if (!isFormData) {
+            headers['Content-Type'] = contentTypeForm;
+
+            if (
+                requestBody &&
+                typeof requestBody === 'object' &&
+                !(requestBody instanceof URLSearchParams)
+            ) {
+                const urlSearchParams = new URLSearchParams();
+                Object.entries(requestBody as Record<string, unknown>).forEach(([key, value]) => {
+                    if (value === undefined || value === null) return;
+                    urlSearchParams.append(key, String(value));
+                });
+                requestBody = urlSearchParams;
+            }
         }
     }
 
-    if (dataType === 'json') {
-        contentType = contentTypeJson;
-        requestBody = params;
-    }
-    const headers = {
-        'Content-Type': contentType,
-        'X-Requested-With': 'XMLHttpRequest',
+    const mergedHeaders = {
+        ...headers,
+        ...(restConfig.headers as any),
     };
 
     return instance
         .request({
             url: url!,
             method: method,
+            params: axiosParams,
             data: requestBody,
-            headers: headers,
+            headers: mergedHeaders,
             onUploadProgress: (event) => {
                 if (config.uploadProgressCallback) {
                     config.uploadProgressCallback(event);
                 }
             },
-            // 非 GET 请求的 params 已被消费并写入 body，这里不要再透传给 axios
             ...restConfig,
             responseType: responseType as any,
         })

@@ -369,9 +369,8 @@ export const usePostVideo = () => {
             return response.data;
         },
         onSuccess: () => {
+            window.location.href = '/ucenter/content/archives';
             toast.success('视频发布成功！');
-            // TODO: 发布成功后，可以做路由跳转
-            // window.location.href = '/user/videos';
         },
         onError: (error: unknown) => {
             const message = error instanceof Error ? error.message : '';
