@@ -11,7 +11,7 @@ import LikeIcon from '../../../assets/icon/like-icon.svg?react';
 import PlayIcon from '../../../assets/icon/player-icon.svg?react';
 import UcenterComment from '../../../assets/icon/ucenter-comment.svg?react';
 import { useDeleteVideo, useSaveVideoInteraction } from '../../../hooks/queries/useVideo';
-import { formatDuration, getAvatarSrc } from '../../../utils';
+import { copyToClipboard, formatDuration, getAvatarSrc } from '../../../utils';
 
 import { StatItem } from './archive-components';
 
@@ -114,7 +114,12 @@ export default function VideoItem({ video }: { video: VideoInfoPost }) {
 
             {/* 操作区 */}
             <div className="flex items-center gap-3">
-                <button className="flex items-center gap-1.5 rounded-[8px] border border-[#ffe1ec] bg-white px-4 py-1.5 text-[13px] text-[#5b2b3b] transition-all hover:border-[#fb7299] hover:text-[#fb7299] hover:bg-[#fff7fb] shadow-sm active:scale-95">
+                <button
+                    onClick={() => {
+                        copyToClipboard(videoId);
+                    }}
+                    className="flex items-center gap-1.5 rounded-[8px] border border-[#ffe1ec] bg-white px-4 py-1.5 text-[13px] text-[#5b2b3b] transition-all hover:border-[#fb7299] hover:text-[#fb7299] hover:bg-[#fff7fb] shadow-sm active:scale-95"
+                >
                     编辑
                 </button>
                 <Popover

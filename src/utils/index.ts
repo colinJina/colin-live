@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { twMerge } from 'tailwind-merge';
 import 'dayjs/locale/zh-cn'; // 引入中文语言包
+import { toast } from '../pages/header/message';
 
 dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
@@ -131,4 +132,49 @@ export const formatCount = (count: number | string | undefined | null): string =
     const yi = (num / 100000000).toFixed(1);
     // 如果小数位是0，去掉小数位 (1.0亿 -> 1亿)
     return `${parseFloat(yi)}亿`;
+};
+
+/**
+ * 复制文本到剪贴板
+ * @param text 需要复制的字符串
+ * @returns 返回一个 Promise，成功返回 true，失败返回 false
+ */
+export const copyToClipboard = async (
+    text: string | number | undefined | null,
+): Promise<boolean> => {
+    if (!text) return false;
+    const content = String(text);
+
+    // 1. 优先使用现代浏览器提供的 Clipboard API
+    if (navigator.clipboard && window.isSecureContext) {
+        try {
+            await navigator.clipboard.writeText(content);
+            toast.success('复制成功！');
+            return true;
+        } catch (err) {
+            console.error('Clipboard API 复制失败:', err);
+        }
+    }
+
+    // 2. 回退方案：使用经典的 textarea 选中并执行 copy 命令
+    try {
+        const textArea = document.createElement('textarea');
+        textArea.value = content;
+        // 确保 textarea 在视觉上不可见，但存在于 DOM 中
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        textArea.style.top = '0';
+        document.body.appendChild(textArea);
+
+        textArea.focus();
+        textArea.select();
+
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        toast.success('复制成功！');
+        return successful;
+    } catch (err) {
+        console.error('ExecCommand 复制回退方案失败:', err);
+        return false;
+    }
 };
