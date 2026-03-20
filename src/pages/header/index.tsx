@@ -12,6 +12,7 @@ import Collect from '@/assets/icon/collect.svg?react';
 import CreateCenter from '@/assets/icon/create-center.svg?react';
 import History from '@/assets/icon/history.svg?react';
 import Message from '@/assets/icon/message.svg?react';
+import useUserAuth from '../../hooks/queries/useUserAuth';
 const SEARCH_PLACEHOLDER = '搜索视频、番剧或 UP 主';
 const HEADER_LINKS = [
     { Icon: Message, label: '消息', path: '/message' },
@@ -36,11 +37,10 @@ const SearchIcon = ({ className }: { className?: string }) => (
 
 export default function LayoutHeader() {
     const navigate = useNavigate();
-
+    const { isLogin, handleLogin } = useUserAuth();
     const token = useUserStore((state) => state.userInfo?.token);
     const noReadCount = useUserStore((state) => state.noReadCount);
     const setNoReadCount = useUserStore((state) => state.setNoReadCount);
-
     useEffect(() => {
         if (!token) {
             setNoReadCount(0);
@@ -131,7 +131,6 @@ export default function LayoutHeader() {
                         <div className="relative group/user py-2">
                             <UserHoverCard />
                         </div>
-
                         {HEADER_LINKS.map(({ Icon, label, path }) => (
                             <NavIcon
                                 key={label}
@@ -145,7 +144,11 @@ export default function LayoutHeader() {
                         <div className="cursor-pointer transition-all hover:opacity-90 active:scale-95">
                             <HeaderUploadButton
                                 onClick={() => {
-                                    navigate('/ucenter/upload');
+                                    if (isLogin) {
+                                        navigate('/ucenter/upload');
+                                    } else {
+                                        handleLogin();
+                                    }
                                 }}
                             />
                         </div>
@@ -187,10 +190,16 @@ function NavIcon({
     showBadge?: boolean;
 }) {
     const navigate = useNavigate();
-
+    const { isLogin, handleLogin } = useUserAuth();
     return (
         <div
-            onClick={() => navigate(path)}
+            onClick={() => {
+                if (isLogin) {
+                    navigate(path);
+                } else {
+                    handleLogin();
+                }
+            }}
             className="relative group/icon flex cursor-pointer flex-col items-center justify-center rounded-[20px] px-2.5 py-2 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_26px_rgba(251,114,153,0.12)]"
         >
             {showBadge && (
