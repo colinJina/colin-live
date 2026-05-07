@@ -490,6 +490,24 @@ export default function VideoDetailCard() {
                             />
                         )}
                     </div>
+                    <section className="relative overflow-hidden rounded-[28px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,249,252,0.98)_0%,rgba(255,239,246,0.98)_100%)] p-5 shadow-[0_18px_40px_rgba(251,114,153,0.12)] ring-1 ring-[#ffd8e4]/70">
+                        <div className="pointer-events-none absolute inset-0">
+                            <div className="absolute left-[-24px] top-[-26px] h-20 w-20 rounded-full bg-white/55 blur-2xl" />
+                            <div className="absolute right-[10%] bottom-[-18px] h-14 w-36 rounded-full bg-[#ffb3ca]/18 blur-2xl" />
+                        </div>
+
+                        <div className="relative">
+                            <div className="inline-flex rounded-full border border-[#ffd4e2] bg-white/72 px-3 py-1 text-[11px] font-semibold tracking-[0.16em] text-[#dd6a90]">
+                                INTRODUCTION
+                            </div>
+                            <h2 className="mt-3 text-lg font-semibold text-[#6f3f55]">视频简介</h2>
+                            <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-[#8f5b70]">
+                                {videoInfoData?.videoInfo?.introduction?.trim() ||
+                                    '作者暂时还没有填写这条视频的简介。'}
+                            </p>
+                        </div>
+                    </section>
+                    <VideoCommentSection videoId={videoId} />
                 </div>
 
                 <aside className="flex min-h-0 flex-col gap-4">
@@ -517,7 +535,6 @@ export default function VideoDetailCard() {
                         onToggleAutoPlayNext={setAutoPlayNext}
                     />
                 </aside>
-                <VideoCommentSection videoId={videoId} />
             </section>
         </main>
     );

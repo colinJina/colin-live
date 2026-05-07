@@ -22,7 +22,7 @@ export function VideoDanmuList({
     return (
         <section
             className={`flex flex-col overflow-hidden rounded-[28px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,249,252,0.98)_0%,rgba(255,239,246,0.98)_100%)] shadow-[0_18px_40px_rgba(251,114,153,0.12)] ring-1 ring-[#ffd8e4]/70 ${
-                isExpanded ? 'min-h-0 flex-1' : 'flex-none'
+                isExpanded ? 'h-[420px] flex-none' : 'flex-none'
             }`}
         >
             <div className="flex items-center justify-between border-b border-white/70 bg-white/56 px-4 py-3 backdrop-blur-md">

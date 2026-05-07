@@ -148,6 +148,11 @@ export interface VideoComment {
 
 export interface VideoDanmu {
     danmuId: number | string;
+    videoId?: string;
+    fileId?: string;
+    fileIndex?: number;
+    videoName?: string;
+    videoCover?: string;
     text?: string;
     content?: string;
     color?: string;
@@ -159,6 +164,11 @@ export interface VideoDanmu {
     postTime?: string;
     nickName?: string;
     userName?: string;
+}
+
+export interface LoadUcenterDanmuParams {
+    pageNo?: number;
+    videoId?: string;
 }
 
 export interface PostDanmuParams {
@@ -234,6 +244,26 @@ export const loadDanmu = (
             videoId,
         },
     }) as Promise<ResponseVO<PaginationResultVO<VideoDanmu>> | null>;
+};
+
+export const loadUcenterDanmu = (
+    params: LoadUcenterDanmuParams,
+): Promise<ResponseVO<PaginationResultVO<VideoDanmu>> | null> => {
+    return request<PaginationResultVO<VideoDanmu>>({
+        url: '/ucenter/loadDanmu',
+        method: 'GET',
+        params,
+    }) as Promise<ResponseVO<PaginationResultVO<VideoDanmu>> | null>;
+};
+
+export const delUcenterDanmu = (danmuId: number): Promise<ResponseVO<null> | null> => {
+    return request<null>({
+        url: '/ucenter/delDanmu',
+        method: 'POST',
+        params: {
+            danmuId,
+        },
+    }) as Promise<ResponseVO<null> | null>;
 };
 
 export const postDanmu = (params: PostDanmuParams): Promise<ResponseVO<null> | null> => {
